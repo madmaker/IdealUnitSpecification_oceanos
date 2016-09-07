@@ -45,6 +45,7 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 			resultBlockLine.attributes.setZone(properties[0]);
 			resultBlockLine.attributes.setPosition(properties[1]);
 			resultBlockLine.isRenumerizable = properties[5].trim().equals("");
+			System.out.println("DISAB["+properties[5]+"]" + " so "+resultBlockLine.isRenumerizable);
 			resultBlockLine.uid = uid;
 			
 			if(item.getType().equals("Oc9_CompanyPart")){

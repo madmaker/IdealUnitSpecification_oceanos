@@ -65,7 +65,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 								if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
 										chbl.setProperty("bl_sequence_no", bl.attributes.getPosition());
-										chbl.setProperty("Oc9_DisChangeFindNo", "true");
+										//TODO chbl.setProperty("Oc9_DisChangeFindNo", "true"); for mvm
 									}
 								}
 							} catch (TCException e) {
@@ -106,7 +106,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 								if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
 										chbl.setProperty("bl_sequence_no", currentPos);
-										chbl.setProperty("Oc9_DisChangeFindNo", "true");
+										//TODO chbl.setProperty("Oc9_DisChangeFindNo", "true"); for mvm
 									}
 								}
 								if(bl.getSubstituteBlockLines()!=null){
@@ -125,31 +125,40 @@ public class OceanosPrepareMethod implements PrepareMethod{
 			
 			if(Specification.settings.getBooleanProperty("doRenumerize")){
 				System.out.println("...RENUMERIZING");
-				String currentPos = "1";
+				String currentPos = "1"; // 
 				for(Block block:specification.getBlockList()) {
 					if(!block.isRenumerizable()) continue;
 					for(BlockLine bl:block.getListOfLines()){
 						if(!bl.isSubstitute){
-								//bl.renumerize(String.valueOf(currentPos));
-								System.out.println("SETTING " + currentPos + " for " + bl.attributes.getStringValueFromField(FormField.NAME));
+							
 								if(bl.blockContentType==BlockContentType.MATERIALS && lengthCutToPosMap.containsKey(bl.getProperty("SE Cut Length"))){
 									bl.attributes.setPosition(lengthCutToPosMap.get(bl.getProperty("SE Cut Length")));
+									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
+										try{
+											chbl.setProperty("bl_sequence_no", lengthCutToPosMap.get(bl.getProperty("SE Cut Length")));
+										}catch(Exception ex){
+											ex.printStackTrace();
+										}
+									}
+									continue;
 								} else {
 									if(bl.blockContentType==BlockContentType.MATERIALS && !bl.getProperty("SE Cut Length").isEmpty()){
 										lengthCutToPosMap.put(bl.getProperty("SE Cut Length"), currentPos);
 									}
 									bl.attributes.setPosition(currentPos);
 								}
+								
 								if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
 										System.out.println("SETTING bl sequence no " + currentPos + " for ");
 										try{
-											chbl.setProperty("bl_sequence_no", currentPos);
+											chbl.setProperty("bl_sequence_no", /*currentPos*/bl.attributes.getPosition());
 										}catch(Exception ex){
 											ex.printStackTrace();
 										}
 									}
 								}
+								
 								if(bl.getSubstituteBlockLines()!=null){
 									for(BlockLine sbl:bl.getSubstituteBlockLines()){
 										System.out.println("SETTING " + currentPos + "* for " + sbl.attributes.getStringValueFromField(FormField.NAME));
@@ -157,21 +166,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 									}
 								}
 								currentPos = String.valueOf(Integer.valueOf(currentPos)+1 + block.getIntervalPosNum());
-								/*if(bl.blockContentType==BlockContentType.MATERIALS){
-									for(BlockLine blockLine:bl.attachedLines){
-										System.out.println("SETTING " + currentPos + " for " + bl.attributes.getStringValueFromField(FormField.NAME));
-										blockLine.attributes.setPosition(currentPos);
-										for(TCComponentBOMLine chbl:blockLine.getRefBOMLines()){
-											System.out.println("SETTING bl sequence no " + currentPos + " for ");
-											try{
-												chbl.setProperty("bl_sequence_no", currentPos);
-											}catch (Exception ex){
-												ex.printStackTrace();
-											}
-										}
-										currentPos = String.valueOf(Integer.valueOf(currentPos)+1+ block.getIntervalPosNum());
-									}
-								}*/
+								
 						}
 					}
 					currentPos = String.valueOf(Integer.valueOf(currentPos) + block.getReservePosNum());

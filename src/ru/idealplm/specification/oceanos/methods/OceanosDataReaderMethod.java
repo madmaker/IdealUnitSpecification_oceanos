@@ -63,6 +63,8 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 	private ArrayList<String> docKitTypesShort;
 	private ArrayList<String> docKitTypesLong;
 	private HashMap<String, BlockLine> materialUIDs;
+	private HashMap<String, BlockLine> uids;
+	private HashMap<String, BlockLine> uidsSubstitute;
 	
 	public OceanosDataReaderMethod() {
 		bl_sequence_noList = new ArrayList<String>();
@@ -73,6 +75,8 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 		docKitTypesShort = new ArrayList<String>();
 		docKitTypesLong = new ArrayList<String>();
 		materialUIDs = new HashMap<String, BlockLine>();
+		uids = new HashMap<String, BlockLine>();
+		uidsSubstitute = new HashMap<String, BlockLine>();
 	}
 	
 	boolean atLeastOnePosIsFixed = false;
@@ -106,15 +110,17 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 					bomLine = (TCComponentBOMLine) bomQueue.take().getComponent();
 					BlockLine line = blFactory.newBlockLine(bomLine);
 					line.isSubstitute = false;
+					uids.put(line.uid, line);
 					for(TCComponentBOMLine comp : bomLine.listSubstitutes()){
 						BlockLine substituteLine = blFactory.newBlockLine(comp);
 						substituteLine.attributes.setPosition(line.attributes.getPosition()+"*");
 						substituteLine.attributes.setQuantity("-1");
 						substituteLine.isSubstitute = true;
 						line.addSubstituteBlockLine(substituteLine);
+						uidsSubstitute.put(substituteLine.uid, substituteLine);
 					}
 					if(line.blockType == BlockType.ME) atLeastOneME = true;
-					if(!line.isRenumerizable) {
+					if(!line.isRenumerizable) {System.out.println("LINE not renumerizable:" + line.attributes.getPosition());
 						atLeastOnePosIsFixed = true;
 						System.out.println("NOTRENUM:"+line.attributes.getId());
 					}
@@ -250,6 +256,11 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 			}
 			if(atLeastOneME && Specification.settings.getStringProperty("MEDocumentId")==null){
 				specification.getErrorList().addError(new Error("ERROR", "Отсутствует документ МЭ."));
+			}
+			for(Entry<String,BlockLine> entry:uidsSubstitute.entrySet()){
+				if(uids.containsKey(entry.getKey()))	{
+					specification.getErrorList().addError(new Error("ERROR", "Объект с идентификатором " + entry.getValue().attributes.getId() + " присутствует в составе и заменах одновременно."));
+				}
 			}
 			
 			Specification.settings.addBooleanProperty("canRenumerize", !atLeastOnePosIsFixed);
