@@ -670,7 +670,8 @@
                   <!--fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell-->
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">
-                        <!--xsl:if test = "$pageQty>'1'"-->
+                        <!-- Uncomment to hide page number on first page -->
+						<!--xsl:if test = "$pageQty>'1'"-->
                             <fo:page-number/>
                         <!--/xsl:if-->
                   </fo:block></fo:table-cell>

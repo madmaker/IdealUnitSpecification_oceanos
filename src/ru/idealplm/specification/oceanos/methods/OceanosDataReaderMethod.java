@@ -12,21 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import com.teamcenter.rac.aif.kernel.AIFComponentContext;
 import com.teamcenter.rac.kernel.TCComponent;
 import com.teamcenter.rac.kernel.TCComponentBOMLine;
@@ -34,8 +19,6 @@ import com.teamcenter.rac.kernel.TCComponentDataset;
 import com.teamcenter.rac.kernel.TCComponentItem;
 import com.teamcenter.rac.kernel.TCComponentItemRevision;
 import com.teamcenter.rac.kernel.TCException;
-import com.teamcenter.rac.kernel.TCVariantService.StoredOptionValue;
-import com.teamcenter.rac.kernel.services.impl.TCOperationService;
 
 import ru.idealplm.specification.oceanos.handlers.OceanosBlockLineFactory;
 import ru.idealplm.specification.oceanos.handlers.linehandlers.OceanosBlockLineHandler;
@@ -83,24 +66,11 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 	boolean atLeastOneME = false;
 	boolean hasPrevRev = false;
 	
-	private class MVMBOMLineProcessor{
+	private class OceanosBOMLineProcessor{
 
-		public MVMBOMLineProcessor() {
+		public OceanosBOMLineProcessor() {
 			
 		}
-		
-		private final String[] blProps = new String[] { 
-				"Oc9_Zone",
-				"bl_sequence_no",
-				"bl_quantity",
-				"Oc9_Note",
-				"Oc9_IsFromEAssembly", //у вхождений с одинаковым sequence_no должно быть одинаковое значение
-				"Oc9_DisChangeFindNo", //у вхождений с одинаковым sequence_no должно быть одинаковое значение
-				"oc9_KITName",
-				"bl_item_uom_tag",
-				"Oc9_KITs"
-		};
-		
 		
 		public void run() {
 			TCComponentBOMLine bomLine;
@@ -120,7 +90,7 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 						uidsSubstitute.put(substituteLine.uid, substituteLine);
 					}
 					if(line.blockType == BlockType.ME) atLeastOneME = true;
-					if(!line.isRenumerizable) {System.out.println("LINE not renumerizable:" + line.attributes.getPosition());
+					if(!line.isRenumerizable) {
 						atLeastOnePosIsFixed = true;
 						System.out.println("NOTRENUM:"+line.attributes.getId());
 					}
@@ -128,7 +98,7 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 					
 					if(line.blockContentType == BlockContentType.MATERIALS){
 						if(materialUIDs.containsKey(line.uid)){
-								BlockLine storedLine = materialUIDs.get(line.uid);
+								BlockLine storedLine = materialUIDs.get(line.uid+line.getProperty("SE Cut Length"));
 								if(storedLine.getProperty("FromGeomMat").isEmpty()){
 									storedLine.addProperty("FromGeomMat", line.getProperty("FromGeomMat"));
 								}
@@ -137,21 +107,27 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 								}
 								System.out.println("ALREADY GOT ONE ^" + line.attributes.getId());
 								if(line.getProperty("SE Cut Length").isEmpty() && storedLine.getProperty("SE Cut Length").isEmpty()){
+									// If both are null, then we just update stored line attributes with current line attributes
 									System.out.println("BOTH NULL");
 									storedLine.attributes.createKits();
 									storedLine.attributes.addKit(line.attributes.getKits());
 									storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
 									storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
 								} else if(!line.getProperty("SE Cut Length").isEmpty() && !storedLine.getProperty("SE Cut Length").isEmpty()) {
+									// If both have different SE Cut Length attribute values then we attach current line to stored one
+									// Later it will be detached and added directly to block
 									System.out.println("BOTH NOT NULL");
 									storedLine.getAttachedLines().add(line);
 								} else {
+									// If one is empty and other one is not, then we have an error
+									// It is not allowed for the same material to have 2 occurences,
+									// where one of them does have SE Cut Length attribute and the other one doesn't
 									System.out.println("BOTH DIFFERENT");
-									specification.getErrorList().addError(new Error("ERROR", "Отсутствует значение атрибута SE Cut Length для материала с именем "+line.attributes.getStringValueFromField(FormField.NAME)));
+									specification.getErrorList().addError(new Error("ERROR", "Отсутствует значение атрибута SE Cut Length для материала с именем "+line.attributes.getStringValueFromField(FormField.ID)));
 								}
 						} else {
-							materialUIDs.put(line.uid, line);
-							blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid, line);
+							materialUIDs.put(line.uid+line.getProperty("SE Cut Length"), line);
+							blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid+line.getProperty("SE Cut Length"), line);
 						}
 					} else {
 						blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid, line);
@@ -217,7 +193,7 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 				while(!service.isTerminated()){
 					Thread.sleep(100);
 				}*/
-				MVMBOMLineProcessor bomLineProcessor = new MVMBOMLineProcessor();
+				OceanosBOMLineProcessor bomLineProcessor = new OceanosBOMLineProcessor();
 				bomLineProcessor.run();
 			}
 			

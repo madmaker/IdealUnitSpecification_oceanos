@@ -1,5 +1,6 @@
 package ru.idealplm.specification.oceanos.handlers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,10 +8,13 @@ import java.util.Map;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import ru.idealplm.specification.oceanos.comparators.DefaultComparator;
 import ru.idealplm.specification.oceanos.comparators.DocumentComparator;
@@ -54,11 +58,11 @@ public class SampleHandler extends AbstractHandler {
 	@SuppressWarnings("restriction")
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		
-		TCComponentBOMLine topBomLine = Activator.getPSEService().getTopBOMLine();
-		Specification specification = Specification.getInstance();
+		final TCComponentBOMLine topBomLine = Activator.getPSEService().getTopBOMLine();
+		final Specification specification = Specification.getInstance();
 		specification.init(topBomLine, new OceanosValidateMethod(), new OceanosDataReaderMethod(), new OceanosPrepareMethod(), new OceanosXmlBuilderMethod(),new OceanosReportBuilderMethod() , new OceanosAttachMethod());
 		
-		DefaultComparator defaultComparator = new DefaultComparator(Specification.FormField.POSITION);
+		DefaultComparator defaultPosComparator = new DefaultComparator(Specification.FormField.POSITION);
 		DefaultComparator defaultNameComparator = new DefaultComparator(Specification.FormField.NAME);
 		DefaultComparator defaultIDComparator = new DefaultComparator(Specification.FormField.ID);
 		DocumentComparator docComparator = new DocumentComparator();
@@ -75,10 +79,10 @@ public class SampleHandler extends AbstractHandler {
 		blockList.addBlock(new Block(BlockContentType.OTHERS, BlockType.DEFAULT, defaultNameComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.MATERIALS, BlockType.DEFAULT, matComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.KITS, BlockType.DEFAULT, kitComparator, kitComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.COMPLEXES, BlockType.ME, defaultIDComparator, defaultComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.ASSEMBLIES, BlockType.ME, defaultIDComparator, defaultComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.DETAILS, BlockType.ME, defaultComparator, defaultComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.STANDARDS, BlockType.ME, defaultNameComparator, defaultComparator, 0));
+		blockList.addBlock(new Block(BlockContentType.COMPLEXES, BlockType.ME, defaultIDComparator, defaultPosComparator, 0));
+		blockList.addBlock(new Block(BlockContentType.ASSEMBLIES, BlockType.ME, defaultIDComparator, defaultPosComparator, 0));
+		blockList.addBlock(new Block(BlockContentType.DETAILS, BlockType.ME, defaultPosComparator, defaultPosComparator, 0));
+		blockList.addBlock(new Block(BlockContentType.STANDARDS, BlockType.ME, defaultNameComparator, defaultPosComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.OTHERS, BlockType.ME, defaultNameComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.MATERIALS, BlockType.ME, matComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.KITS, BlockType.ME, kitComparator, kitComparator, 0));
@@ -100,9 +104,21 @@ public class SampleHandler extends AbstractHandler {
 			System.out.println(specification.getErrorList().toString());
 		} else {
 			try{
-				//ReportBuilder reportBuilder = new PDFBuilder(Specification.getDefaultSpecificationPDFTemplate(), Specification.getDefaultSpecificationPDFConfig());
+				// TODO Need to make it start async right when SP button is pressed
+				// ReportBuilder reportBuilder = new PDFBuilder(Specification.getDefaultSpecificationPDFTemplate(), Specification.getDefaultSpecificationPDFConfig());
 				PerfTrack.prepare("readBOMData");
-				specification.readBOMData();
+				ProgressMonitorDialog pd = new ProgressMonitorDialog(HandlerUtil.getActiveShell(event).getShell());
+				try {
+					pd.run(true /*fork*/, true /*cancelable*/, new IRunnableWithProgress() {
+					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+						monitor.beginTask("Чтение данных", 100);
+						specification.readBOMData();
+						monitor.done();
+					}
+					});
+				} catch (InvocationTargetException | InterruptedException e) {
+					e.printStackTrace();
+				}
 				PerfTrack.addToLog("readBOMData");
 				
 				if(specification.getErrorList().size()>0){
@@ -132,32 +148,54 @@ public class SampleHandler extends AbstractHandler {
 					topBomLine.lock();
 					PerfTrack.addToLog("Locking BOM");
 				//}
-				
-				PerfTrack.prepare("prepareBlocks");
-				specification.prepareBlocks();
-				PerfTrack.addToLog("prepareBlocks");
-				try{
-					Thread.sleep(1000);
-				}catch(Exception ex){};
-				PerfTrack.prepare("makeXmlFile");
-				specification.makeXmlFile();
-				PerfTrack.addToLog("makeXmlFile");
-				PerfTrack.prepare("makeReport");
-				specification.makeReportFile();
-				PerfTrack.addToLog("makeReport");
-				PerfTrack.prepare("putInTeamcenter");
-				specification.putInTeamcenter();
-				PerfTrack.addToLog("putInTeamcenter");
-				System.out.println("--- ERROR LIST ---");
-				System.out.println(specification.getErrorList().toString());
-				System.out.println("--- ERROR LIST ---");
+					try {
+						pd.open();
+						pd.run(true /*fork*/, true /*cancelable*/, new IRunnableWithProgress() {
+						public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+							monitor.beginTask("Построение спецификации", 100);
+							PerfTrack.prepare("prepareBlocks");
+							monitor.subTask("Обработка данных");
+							specification.prepareBlocks();
+							monitor.worked(20);
+							PerfTrack.addToLog("prepareBlocks");
+							PerfTrack.prepare("makeXmlFile");
+							monitor.subTask("Построение XML файла");
+							specification.makeXmlFile();
+							monitor.worked(20);
+							PerfTrack.addToLog("makeXmlFile");
+							PerfTrack.prepare("makeReport");
+							monitor.subTask("Построение PDF файла");
+							specification.makeReportFile();
+							monitor.worked(20);
+							PerfTrack.addToLog("makeReport");
+							PerfTrack.prepare("putInTeamcenter");
+							monitor.subTask("Добавление в Teamcenter");
+							specification.putInTeamcenter();
+							monitor.worked(20);
+							PerfTrack.addToLog("putInTeamcenter");
+							System.out.println("--- ERROR LIST ---");
+							System.out.println(specification.getErrorList().toString());
+							System.out.println("--- ERROR LIST ---");
+							
+							if(Specification.settings.getBooleanProperty("doRenumerize")){
+								PerfTrack.prepare("Saving&unlocking BOM");
+								try {
+									topBomLine.save();
+									topBomLine.unlock();
+								} catch (TCException e) {
+									e.printStackTrace();
+								}
+								PerfTrack.addToLog("Saving&unlocking BOM");
+							}
+							monitor.done();
+						}
+						});
+					} catch (InvocationTargetException | InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				
 				//if(Specification.settings.getBooleanProperty("doRenumerize")){
-					PerfTrack.prepare("Saving&unlocking BOM");
-					topBomLine.save();
-					Activator.getPSEService().saveBOM();
-					topBomLine.unlock();
-					PerfTrack.addToLog("Saving&unlocking BOM");
 				//}
 				
 				PerfTrack.printLog();
@@ -165,7 +203,7 @@ public class SampleHandler extends AbstractHandler {
 				e.printStackTrace();
 			} finally {
 				specification.cleanUp();
-				specification = null;
+				//specification = null;
 			}
 		}
 		return null;

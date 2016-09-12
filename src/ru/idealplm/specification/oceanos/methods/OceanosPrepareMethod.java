@@ -58,13 +58,14 @@ public class OceanosPrepareMethod implements PrepareMethod{
 						l.attachedLines.clear();
 					}
 					block.getListOfLines().addAll(postAddMat);
-				} else {
+				}// else {
 					for(BlockLine bl:block.getListOfLines()){
 						if(!bl.isSubstitute){
 							try {
 								if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
 										chbl.setProperty("bl_sequence_no", bl.attributes.getPosition());
+										if(block.getBlockContentType()==BlockContentType.MATERIALS) System.out.println("/| setting seq no " + bl.attributes.getPosition() + " for " + bl.attributes.getId());
 										//TODO chbl.setProperty("Oc9_DisChangeFindNo", "true"); for mvm
 									}
 								}
@@ -73,7 +74,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 							}
 						}
 					}
-				}
+				//}
 				block.sort();
 			}
 			
