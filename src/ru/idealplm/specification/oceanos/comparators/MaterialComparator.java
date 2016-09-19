@@ -10,6 +10,9 @@ public class MaterialComparator implements Comparator<BlockLine>{
 	@Override
 	public int compare(BlockLine line0, BlockLine line1) {
 		
+		
+		String field0;
+		String field1;
 		String cutLength0 = line0.getProperty("SE Cut Length");
 		String cutLength1 = line1.getProperty("SE Cut Length");
 		if(!cutLength0.isEmpty() && cutLength1.isEmpty()){
@@ -19,14 +22,15 @@ public class MaterialComparator implements Comparator<BlockLine>{
 			System.out.println("0<1");
 			return 1;
 		}
-		
-		String field0;
-		String field1;
-		//if(cutLength0.isEmpty() && cutLength1.isEmpty()){
-			field0 = line0.attributes.getStringValueFromField(FormField.NAME);
-			field1 = line1.attributes.getStringValueFromField(FormField.NAME);
+		if(!cutLength0.isEmpty() && !cutLength1.isEmpty()){
+			field0 = line0.getProperty("CleanName") + line0.uid + cutLength0;
+			field1 = line1.getProperty("CleanName") + line1.uid + cutLength1;
 			System.out.println("...comparing "+ field0 + " and " + field1);
-		/*} else {
+		} else {
+			field0 = line0.getProperty("CleanName");
+			field1 = line1.getProperty("CleanName");
+		}
+			/*
 			field0 = cutLength0.replaceAll("[^0-9.]+", "");
 			field1 = cutLength1.replaceAll("[^0-9.]+", "");
 			if(field0.isEmpty() && field1.isEmpty()){

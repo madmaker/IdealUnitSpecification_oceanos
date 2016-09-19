@@ -181,6 +181,7 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 				resultBlockLine.addRefBOMLine(bomLine);
 				resultBlockLine.addProperty("UOM", properties[7]);
 				resultBlockLine.addProperty("SE Cut Length", seCutLength);
+				resultBlockLine.addProperty("CleanName", item.getProperty("oc9_RightName"));
 				resultBlockLine.addProperty("FromGeomMat", "");
 				resultBlockLine.addProperty("FromMat", "true");
 				if(!seCutLength.isEmpty() && !properties[7].equals("*")){
@@ -205,11 +206,12 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 					int quantotyGD = Integer.parseInt(properties[2].equals("")?"1":properties[2]);
 					String uom = ((TCComponentBOMLine) materialBOMLines[0].getComponent()).getProperty("bl_item_uom_tag");
 					uom = uom.equals("*")?"":uom;
-					resultBlockLine.attributes.setName(materialIR.getItem().getProperty("object_name"));
+					resultBlockLine.attributes.setName(materialIR.getItem().getProperty("oc9_RightName"));
 					resultBlockLine.attributes.setQuantity(String.valueOf(quantityMD*quantotyGD));
 					resultBlockLine.attributes.setRemark(uom);
 					resultBlockLine.addRefBOMLine(bomLine);
 					resultBlockLine.addProperty("SE Cut Length", "");
+					resultBlockLine.addProperty("CleanName", materialIR.getItem().getProperty("oc9_RightName"));
 					resultBlockLine.addProperty("FromGeomMat", "true");
 					resultBlockLine.addProperty("FromMat", "");
 					resultBlockLine.uid = materialIR.getUid();

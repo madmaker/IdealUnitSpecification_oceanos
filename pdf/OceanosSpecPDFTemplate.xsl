@@ -415,6 +415,13 @@
 			<xsl:if test="contains($font,'italic')"> <xsl:attribute name="font-style">italic</xsl:attribute></xsl:if>
 			<xsl:if test="contains($col/@warning,'true')"> <xsl:attribute name="color">red</xsl:attribute></xsl:if>
             
+			<xsl:if test="contains($col/@unite,'true')">
+				<xsl:attribute name="background-color">white</xsl:attribute>
+				<xsl:attribute name="margin-top">0.15mm</xsl:attribute>
+				<xsl:attribute name="padding-bottom">-0.05mm</xsl:attribute>
+				<xsl:attribute name="padding-right">0.026cm</xsl:attribute>
+				<xsl:attribute name="padding-left">-6.772cm</xsl:attribute>
+			</xsl:if>
 			<!--xsl:if test="contains($font,'bold')"> <xsl:attribute name="font-weight">bold</xsl:attribute></xsl:if-->
 			
 			<xsl:choose>

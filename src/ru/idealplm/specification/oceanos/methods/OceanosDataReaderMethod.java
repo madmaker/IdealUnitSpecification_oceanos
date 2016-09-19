@@ -97,7 +97,7 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 					validateBOMLineAttributess(line);
 					
 					if(line.blockContentType == BlockContentType.MATERIALS){
-						if(materialUIDs.containsKey(line.uid)){
+						if(materialUIDs.containsKey(line.uid+line.getProperty("SE Cut Length"))){
 								BlockLine storedLine = materialUIDs.get(line.uid+line.getProperty("SE Cut Length"));
 								if(storedLine.getProperty("FromGeomMat").isEmpty()){
 									storedLine.addProperty("FromGeomMat", line.getProperty("FromGeomMat"));

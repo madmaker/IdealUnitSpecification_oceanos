@@ -131,12 +131,27 @@ public class OceanosPrepareMethod implements PrepareMethod{
 					if(!block.isRenumerizable()) continue;
 					for(BlockLine bl:block.getListOfLines()){
 						if(!bl.isSubstitute){
+							for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
+								try{
+									chbl.setProperty("bl_sequence_no", "");
+								}catch(Exception ex){
+									ex.printStackTrace();
+								}
+							}
+						}
+					}
+				}
+				
+				for(Block block:specification.getBlockList()) {
+					if(!block.isRenumerizable()) continue;
+					for(BlockLine bl:block.getListOfLines()){
+						if(!bl.isSubstitute){
 							
-								if(bl.blockContentType==BlockContentType.MATERIALS && lengthCutToPosMap.containsKey(bl.getProperty("SE Cut Length"))){
-									bl.attributes.setPosition(lengthCutToPosMap.get(bl.getProperty("SE Cut Length")));
+								if(bl.blockContentType==BlockContentType.MATERIALS && lengthCutToPosMap.containsKey(bl.uid+bl.getProperty("SE Cut Length"))){
+									bl.attributes.setPosition(lengthCutToPosMap.get(bl.uid+bl.getProperty("SE Cut Length")));
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
 										try{
-											chbl.setProperty("bl_sequence_no", lengthCutToPosMap.get(bl.getProperty("SE Cut Length")));
+											chbl.setProperty("bl_sequence_no", lengthCutToPosMap.get(bl.uid+bl.getProperty("SE Cut Length")));
 										}catch(Exception ex){
 											ex.printStackTrace();
 										}
@@ -144,7 +159,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 									continue;
 								} else {
 									if(bl.blockContentType==BlockContentType.MATERIALS && !bl.getProperty("SE Cut Length").isEmpty()){
-										lengthCutToPosMap.put(bl.getProperty("SE Cut Length"), currentPos);
+										lengthCutToPosMap.put(bl.uid+bl.getProperty("SE Cut Length"), currentPos);
 									}
 									bl.attributes.setPosition(currentPos);
 								}
