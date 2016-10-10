@@ -420,18 +420,18 @@ public class MainSpecificationDialog extends Dialog {
 		button_ReadLastRevPos.setText("\u0417\u0430\u0447\u0438\u0442\u0430\u0442\u044C \u043F\u043E\u0437\u0438\u0446\u0438\u0438 \u0441 \u043F\u0440\u043E\u0448\u043B\u043E\u0439 \u0440\u0435\u0432\u0438\u0437\u0438\u0438");
 		button_ReadLastRevPos.setBounds(10, 258, 225, 16);
 		button_ReadLastRevPos.setEnabled(Specification.settings.getBooleanProperty("canReadLastRevPos"));
-		button_ReadLastRevPos.setVisible(false);
+		button_ReadLastRevPos.setVisible(true);
 		//button_ReadLastRevPos.setEnabled(false);
 		
 		final Button button_UseReservePos = new Button(compositeMain, SWT.CHECK);
 		button_UseReservePos.setText("\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u0440\u0435\u0437\u0435\u0440\u0432 \u043F\u043E\u0437\u0438\u0446\u0438\u0439");
 		button_UseReservePos.setBounds(10, 282, 225, 16);
 		button_UseReservePos.setEnabled(Specification.settings.getBooleanProperty("canUseReservePos"));
-		button_UseReservePos.setVisible(false);
+		button_UseReservePos.setVisible(true);
 		//button_UseReservePos.setEnabled(false);
 		
 		final Button button_ShowAdditionalForm = new Button(compositeMain, SWT.CHECK);
-		button_ShowAdditionalForm.setBounds(10, 258, 225, 16);
+		button_ShowAdditionalForm.setBounds(10, 302, 225, 16);
 		button_ShowAdditionalForm.setText("Показать дополнительную форму");
 		
 		Label label = new Label(compositeMain, SWT.NONE);
