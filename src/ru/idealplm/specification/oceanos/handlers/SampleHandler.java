@@ -17,6 +17,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import ru.idealplm.specification.oceanos.comparators.DefaultComparator;
+import ru.idealplm.specification.oceanos.comparators.DetailComparator;
 import ru.idealplm.specification.oceanos.comparators.DocumentComparator;
 import ru.idealplm.specification.oceanos.comparators.KitComparator;
 import ru.idealplm.specification.oceanos.comparators.MaterialComparator;
@@ -60,7 +61,16 @@ public class SampleHandler extends AbstractHandler {
 		
 		final TCComponentBOMLine topBomLine = Activator.getPSEService().getTopBOMLine();
 		final Specification specification = Specification.getInstance();
-		specification.init(topBomLine, new OceanosValidateMethod(), new OceanosDataReaderMethod(), new OceanosPrepareMethod(), new OceanosXmlBuilderMethod(),new OceanosReportBuilderMethod() , new OceanosAttachMethod());
+		Specification.settings.setTemplateStream(SampleHandler.class.getResourceAsStream("/pdf/OceanosSpecPDFTemplate.xsl"));
+		Specification.settings.setConfigStream(SampleHandler.class.getResourceAsStream("/pdf/userconfig.xml"));
+		OceanosAttachMethod oceanosAttachMethod = new OceanosAttachMethod();
+		OceanosDataReaderMethod oceanosDataReaderMethod = new OceanosDataReaderMethod();
+		OceanosPrepareMethod oceanosPrepareMethod = new OceanosPrepareMethod();
+		OceanosXmlBuilderMethod oceanosXmlBuilderMethod = new OceanosXmlBuilderMethod();
+		OceanosValidateMethod oceanosValidateMethod = new OceanosValidateMethod();
+		OceanosReportBuilderMethod oceanosReportBuilderMethod = new OceanosReportBuilderMethod(Specification.settings.getTemplateStream(), Specification.settings.getConfigStream());
+		
+		specification.init(topBomLine, oceanosValidateMethod, oceanosDataReaderMethod, oceanosPrepareMethod, oceanosXmlBuilderMethod, oceanosReportBuilderMethod, oceanosAttachMethod);
 		
 		DefaultComparator defaultPosComparator = new DefaultComparator(Specification.FormField.POSITION);
 		DefaultComparator defaultNameComparator = new DefaultComparator(Specification.FormField.NAME);
@@ -69,27 +79,28 @@ public class SampleHandler extends AbstractHandler {
 		KitComparator kitComparator = new KitComparator();
 		PositionComparator posComparator = new PositionComparator();
 		MaterialComparator matComparator = new MaterialComparator();
+		DetailComparator detailComparator = new DetailComparator();
 		
 		BlockList blockList = specification.getBlockList();
 		blockList.addBlock(new Block(BlockContentType.DOCS, BlockType.DEFAULT, docComparator, docComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.COMPLEXES, BlockType.DEFAULT, defaultIDComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.ASSEMBLIES, BlockType.DEFAULT, defaultIDComparator, posComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.DETAILS, BlockType.DEFAULT, posComparator, posComparator, 0));
+		blockList.addBlock(new Block(BlockContentType.DETAILS, BlockType.DEFAULT, detailComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.STANDARDS, BlockType.DEFAULT, defaultNameComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.OTHERS, BlockType.DEFAULT, defaultNameComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.MATERIALS, BlockType.DEFAULT, matComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.KITS, BlockType.DEFAULT, kitComparator, kitComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.COMPLEXES, BlockType.ME, defaultIDComparator, defaultPosComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.ASSEMBLIES, BlockType.ME, defaultIDComparator, defaultPosComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.DETAILS, BlockType.ME, defaultPosComparator, defaultPosComparator, 0));
+		blockList.addBlock(new Block(BlockContentType.DETAILS, BlockType.ME, detailComparator, defaultPosComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.STANDARDS, BlockType.ME, defaultNameComparator, defaultPosComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.OTHERS, BlockType.ME, defaultNameComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.MATERIALS, BlockType.ME, matComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.KITS, BlockType.ME, kitComparator, kitComparator, 0));
 		
-		blockList.getBlock(BlockContentType.DOCS, BlockType.DEFAULT).setIsRenumerizable(false);
-		blockList.getBlock(BlockContentType.KITS, BlockType.DEFAULT).setIsRenumerizable(false);
-		blockList.getBlock(BlockContentType.KITS, BlockType.ME).setIsRenumerizable(false);
+		blockList.getBlock(BlockContentType.DOCS, BlockType.DEFAULT).isRenumerizable = false;
+		blockList.getBlock(BlockContentType.KITS, BlockType.DEFAULT).isRenumerizable = false;
+		blockList.getBlock(BlockContentType.KITS, BlockType.ME).isRenumerizable = false;
 		
 		Specification.settings.setColumnLength(FormField.FORMAT, 3);
 		Specification.settings.setColumnLength(FormField.ZONE, 3);
@@ -136,7 +147,7 @@ public class SampleHandler extends AbstractHandler {
 
 				mainDialog.open();
 				for(int i = 0; i < specification.getBlockList().size(); i++){
-					if(specification.getBlockList().get(i).getListOfLines()!=null) System.out.println("Size of " + specification.getBlockList().get(i).getBlockTitle() + " = " + specification.getBlockList().get(i).getListOfLines().size());
+					if(specification.getBlockList().get(i).getListOfLines()!=null) System.out.println("Size of " + specification.getBlockList().get(i).blockTitle + " = " + specification.getBlockList().get(i).getListOfLines().size());
 				}
 				
 				if (!Specification.settings.getBooleanProperty("bOkPressed")) { return null; }
@@ -220,9 +231,9 @@ public class SampleHandler extends AbstractHandler {
 			System.out.println(props[0]);
 			Block block = blockList.getBlock(BlockContentType.values()[Character.getNumericValue(props[0].charAt(0))], props[0].charAt(1)=='0'?BlockType.DEFAULT:BlockType.ME);
 			if(block!=null){
-				block.setReservePosNum(Integer.parseInt(props[1]));
-				block.setReserveLinesNum(Integer.parseInt(props[2]));
-				block.setIntervalPosNum(Integer.parseInt(props[3]));
+				block.reservePosNum = Integer.parseInt(props[1]);
+				block.reserveLinesNum = Integer.parseInt(props[2]);
+				block.intervalPosNum = Integer.parseInt(props[3]);
 			}
 		}
 	}
@@ -231,7 +242,7 @@ public class SampleHandler extends AbstractHandler {
 		String settingsString = "";
 		String del = ":";
 		for(Block block:blockList){
-			settingsString+=block.getBlockContentType().ordinal()+(block.getBlockType()==BlockType.DEFAULT?"0":"1")+del+block.getReservePosNum()+del+block.getReserveLinesNum()+del+block.getIntervalPosNum();
+			settingsString+=block.blockContentType.ordinal()+(block.blockType==BlockType.DEFAULT?"0":"1")+del+block.reservePosNum+del+block.reserveLinesNum+del+block.intervalPosNum;
 			settingsString+="&";
 		}
 		if(settingsString.endsWith("&")){

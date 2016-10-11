@@ -7,7 +7,7 @@ import com.teamcenter.rac.kernel.TCComponentItem;
 import com.teamcenter.rac.kernel.TCComponentItemRevision;
 
 import ru.idealplm.specification.oceanos.handlers.linehandlers.OceanosBlockLineHandler;
-import ru.idealplm.utils.specification.BlockLine;
+import ru.idealplm.utils.specification.blockline.BlockLine;
 import ru.idealplm.utils.specification.BlockLineFactory;
 import ru.idealplm.utils.specification.Error;
 import ru.idealplm.utils.specification.Specification;

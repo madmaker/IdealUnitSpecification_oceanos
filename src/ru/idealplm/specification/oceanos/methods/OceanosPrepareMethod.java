@@ -20,37 +20,29 @@ import com.teamcenter.rac.kernel.TCSession;
 
 import ru.idealplm.specification.oceanos.comparators.PositionComparator;
 import ru.idealplm.utils.specification.Block;
-import ru.idealplm.utils.specification.BlockLine;
+import ru.idealplm.utils.specification.blockline.BlockLine;
 import ru.idealplm.utils.specification.Specification;
 import ru.idealplm.utils.specification.Specification.BlockContentType;
 import ru.idealplm.utils.specification.Specification.BlockType;
 import ru.idealplm.utils.specification.Specification.FormField;
 import ru.idealplm.utils.specification.Error;
-import ru.idealplm.utils.specification.methods.PrepareMethod;
+import ru.idealplm.utils.specification.methods.IPrepareMethod;
 
-public class OceanosPrepareMethod implements PrepareMethod{
+public class OceanosPrepareMethod implements IPrepareMethod{
 	
 	private Specification specification;
-	int firstPos = 1;
 	private HashMap<String,String> prevPosMap = new HashMap<String,String>();
 	private ArrayList<BlockLine> postAddMat = new ArrayList<BlockLine>();
 	private HashMap<String,String> lengthCutToPosMap = new HashMap<String, String>();
 
 	@Override
-	public void prepareBlocks() {
+	public void prepareData() {
 		try{
 			this.specification = Specification.getInstance();
 			System.out.println("...METHOD...  PrepareMethod");
-			for(Block block:specification.getBlockList()) {
-				if(!block.isRenumerizable()) continue;
-				block.setFirstPosNo(firstPos);
-				System.out.println("Setting firstpos:" + firstPos + " For block:" + block.getBlockTitle());
-				firstPos = firstPos + block.getReservePosNum() + block.getRenumerizableLinesCount() + (block.getRenumerizableLinesCount()-1)*block.getIntervalPosNum();
-				System.out.println("next:"+block.getReservePosNum()+":"+block.getRenumerizableLinesCount()+":"+block.getIntervalPosNum());
-			}
 			
 			for(Block block:specification.getBlockList()) {
-				if(block.getBlockContentType()==BlockContentType.MATERIALS){
+				if(block.blockContentType==BlockContentType.MATERIALS){
 					for(BlockLine l:block.getListOfLines()){
 						for(BlockLine attached:l.getAttachedLines()){
 							postAddMat.add(attached);
@@ -65,7 +57,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 								if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
 										chbl.setProperty("bl_sequence_no", bl.attributes.getPosition());
-										if(block.getBlockContentType()==BlockContentType.MATERIALS) System.out.println("/| setting seq no " + bl.attributes.getPosition() + " for " + bl.attributes.getId());
+										if(block.blockContentType==BlockContentType.MATERIALS) System.out.println("/| setting seq no " + bl.attributes.getPosition() + " for " + bl.attributes.getId());
 										//TODO chbl.setProperty("Oc9_DisChangeFindNo", "true"); for mvm
 									}
 								}
@@ -75,7 +67,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 						}
 					}
 				//}
-				block.sort();
+				block.sort(true);
 			}
 			
 			if(Specification.settings.getBooleanProperty("doReadLastRevPos")){
@@ -95,7 +87,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 				}
 				readDataFromPrevRev(prevRev);
 				for(Block block:specification.getBlockList()) {
-					if(!block.isRenumerizable()) continue;
+					if(!block.isRenumerizable) continue;
 					for(BlockLine bl:block.getListOfLines()){
 						if(!bl.isSubstitute){
 							String currentPos = prevPosMap.get(bl.uid);
@@ -120,7 +112,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 							}
 						}
 					}
-					Collections.sort(block.getListOfLines(), new PositionComparator());
+					block.sort(false);
 				}
 			}
 			
@@ -128,7 +120,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 				System.out.println("...RENUMERIZING");
 				String currentPos = "1"; // 
 				for(Block block:specification.getBlockList()) {
-					if(!block.isRenumerizable()) continue;
+					if(!block.isRenumerizable) continue;
 					for(BlockLine bl:block.getListOfLines()){
 						if(!bl.isSubstitute){
 							for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
@@ -143,7 +135,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 				}
 				
 				for(Block block:specification.getBlockList()) {
-					if(!block.isRenumerizable()) continue;
+					if(!block.isRenumerizable) continue;
 					for(BlockLine bl:block.getListOfLines()){
 						if(!bl.isSubstitute){
 							
@@ -162,11 +154,18 @@ public class OceanosPrepareMethod implements PrepareMethod{
 										lengthCutToPosMap.put(bl.uid+bl.getProperty("SE Cut Length"), currentPos);
 									}
 									bl.attributes.setPosition(currentPos);
+									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
+										try{
+											chbl.setProperty("bl_sequence_no", bl.attributes.getPosition());
+										}catch(Exception ex){
+											ex.printStackTrace();
+										}
+									}
 								}
 								
 								if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
-										System.out.println("SETTING bl sequence no " + currentPos + " for ");
+										System.out.println("SETTING bl sequence no " + bl.attributes.getPosition() + " for " + bl.attributes.getStringValueFromField(FormField.NAME));
 										try{
 											chbl.setProperty("bl_sequence_no", /*currentPos*/bl.attributes.getPosition());
 										}catch(Exception ex){
@@ -181,12 +180,12 @@ public class OceanosPrepareMethod implements PrepareMethod{
 										sbl.attributes.setPosition(currentPos+"*");
 									}
 								}
-								currentPos = String.valueOf(Integer.valueOf(currentPos)+1 + block.getIntervalPosNum());
+								currentPos = String.valueOf(Integer.valueOf(currentPos)+1 + block.intervalPosNum);
 								
 						}
 					}
-					currentPos = String.valueOf(Integer.valueOf(currentPos) + block.getReservePosNum());
-					Collections.sort(block.getListOfLines(), new PositionComparator());
+					currentPos = String.valueOf(Integer.valueOf(currentPos) + block.reservePosNum);
+					block.sort(false);
 				}
 			}
 			
@@ -194,7 +193,7 @@ public class OceanosPrepareMethod implements PrepareMethod{
 				System.out.println("...USING RESERVE POS");
 				int currentPos = 1;
 				for(Block block:specification.getBlockList()) {
-					if(!block.isRenumerizable()) continue;
+					if(!block.isRenumerizable) continue;
 					for(BlockLine bl:block.getListOfLines()){
 						if(!bl.isSubstitute){
 							if(!bl.isRenumerizable){
@@ -233,10 +232,10 @@ public class OceanosPrepareMethod implements PrepareMethod{
 							} catch (TCException e) {
 								e.printStackTrace();
 							}
-							currentPos = currentPos + block.getIntervalPosNum() + 1;
+							currentPos = currentPos + block.intervalPosNum + 1;
 						}
 					}
-					currentPos+=block.getReservePosNum();
+					currentPos+=block.reservePosNum;
 					Collections.sort(block.getListOfLines(), new PositionComparator());
 				}
 			}

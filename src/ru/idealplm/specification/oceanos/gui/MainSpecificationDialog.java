@@ -113,15 +113,15 @@ public class MainSpecificationDialog extends Dialog {
 		TableItem blockItem;
 		while(iterator.hasNext()){
 			block = iterator.next();
-			System.out.println("In fill contents: " + block.getBlockTitle() + "=" + block.getListOfLines().size());
+			System.out.println("In fill contents: " + block.blockTitle + "=" + block.getListOfLines().size());
 			blockItem = new TableItem(table, SWT.NONE);
-			if(!block.getBlockTitle().equals("Документация")){
-				blockItem.setText(new String[]{block.getBlockTitle(), String.valueOf(block.getReservePosNum()), String.valueOf(block.getReserveLinesNum()), String.valueOf(block.getIntervalPosNum())});
+			if(!block.blockTitle.equals("Документация")){
+				blockItem.setText(new String[]{block.blockTitle, String.valueOf(block.reservePosNum), String.valueOf(block.reserveLinesNum), String.valueOf(block.intervalPosNum)});
 			} else {
-				blockItem.setText(new String[]{block.getBlockTitle(), String.valueOf(block.getReservePosNum()), String.valueOf(block.getReserveLinesNum()), String.valueOf(block.getIntervalPosNum())});
+				blockItem.setText(new String[]{block.blockTitle, String.valueOf(block.reservePosNum), String.valueOf(block.reserveLinesNum), String.valueOf(block.intervalPosNum)});
 			}
-			if(block.getBlockType()==BlockType.DEFAULT && iterator.nextIndex()!=blockList.size()){
-				if(blockList.get(iterator.nextIndex()).getBlockType()==BlockType.ME){
+			if(block.blockType==BlockType.DEFAULT && iterator.nextIndex()!=blockList.size()){
+				if(blockList.get(iterator.nextIndex()).blockType==BlockType.ME){
 					blockItem = new TableItem(table, SWT.NONE);
 					blockItem.setText(new String[]{"Устанавливается по\n" + Specification.settings.getStringProperty("MEDocumentId")});
 					blockItem.setGrayed(true);
@@ -420,18 +420,18 @@ public class MainSpecificationDialog extends Dialog {
 		button_ReadLastRevPos.setText("\u0417\u0430\u0447\u0438\u0442\u0430\u0442\u044C \u043F\u043E\u0437\u0438\u0446\u0438\u0438 \u0441 \u043F\u0440\u043E\u0448\u043B\u043E\u0439 \u0440\u0435\u0432\u0438\u0437\u0438\u0438");
 		button_ReadLastRevPos.setBounds(10, 258, 225, 16);
 		button_ReadLastRevPos.setEnabled(Specification.settings.getBooleanProperty("canReadLastRevPos"));
-		button_ReadLastRevPos.setVisible(false);
+		button_ReadLastRevPos.setVisible(true);
 		//button_ReadLastRevPos.setEnabled(false);
 		
 		final Button button_UseReservePos = new Button(compositeMain, SWT.CHECK);
 		button_UseReservePos.setText("\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u0440\u0435\u0437\u0435\u0440\u0432 \u043F\u043E\u0437\u0438\u0446\u0438\u0439");
 		button_UseReservePos.setBounds(10, 282, 225, 16);
 		button_UseReservePos.setEnabled(Specification.settings.getBooleanProperty("canUseReservePos"));
-		button_UseReservePos.setVisible(false);
+		button_UseReservePos.setVisible(true);
 		//button_UseReservePos.setEnabled(false);
 		
 		final Button button_ShowAdditionalForm = new Button(compositeMain, SWT.CHECK);
-		button_ShowAdditionalForm.setBounds(10, 258, 225, 16);
+		button_ShowAdditionalForm.setBounds(10, 320, 225, 16);
 		button_ShowAdditionalForm.setText("Показать дополнительную форму");
 		
 		Label label = new Label(compositeMain, SWT.NONE);
@@ -503,9 +503,9 @@ public class MainSpecificationDialog extends Dialog {
 				for(int i = 0; i < table.getItemCount(); i++){
 					TableItem tableItem = table.getItem(i);
 					if(tableItem.getText(0).startsWith("Устанавливается")) continue;
-					blockList.get(j).setReservePosNum(Integer.parseInt(tableItem.getText(1).isEmpty()?"0":tableItem.getText(1)));
-					blockList.get(j).setReserveLinesNum(Integer.parseInt(tableItem.getText(2).isEmpty()?"0":tableItem.getText(2)));
-					blockList.get(j).setIntervalPosNum(Integer.parseInt(tableItem.getText(3).isEmpty()?"0":tableItem.getText(3)));
+					blockList.get(j).reservePosNum = Integer.parseInt(tableItem.getText(1).isEmpty()?"0":tableItem.getText(1));
+					blockList.get(j).reserveLinesNum = Integer.parseInt(tableItem.getText(2).isEmpty()?"0":tableItem.getText(2));
+					blockList.get(j).intervalPosNum = Integer.parseInt(tableItem.getText(3).isEmpty()?"0":tableItem.getText(3));
 					j++;
 				}
 				/*ListIterator<Block> iterator = blockList.listIterator();

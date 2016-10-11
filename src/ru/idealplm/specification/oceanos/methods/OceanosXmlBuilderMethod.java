@@ -17,17 +17,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import ru.idealplm.utils.specification.Block;
-import ru.idealplm.utils.specification.BlockLine;
+import ru.idealplm.utils.specification.blockline.BlockLine;
 import ru.idealplm.utils.specification.BlockList;
 import ru.idealplm.utils.specification.Specification;
 import ru.idealplm.utils.specification.Specification.BlockContentType;
 import ru.idealplm.utils.specification.Specification.BlockType;
 import ru.idealplm.utils.specification.Specification.FormField;
-import ru.idealplm.utils.specification.methods.XmlBuilderMethod;
+import ru.idealplm.utils.specification.methods.IXmlBuilderMethod;
 import ru.idealplm.utils.specification.util.GeneralUtils;
 import ru.idealplm.utils.specification.util.LineUtil;
 
-public class OceanosXmlBuilderMethod implements XmlBuilderMethod{
+public class OceanosXmlBuilderMethod implements IXmlBuilderMethod{
 	
 	private Specification specification = Specification.getInstance();
 	final private double maxWidthGlobalRemark = 474.0;
@@ -77,7 +77,7 @@ public class OceanosXmlBuilderMethod implements XmlBuilderMethod{
 	/****************/
 
 	@Override
-	public File makeXmlFile() {
+	public File buildXmlFile() {
 		System.out.println("...METHOD... XmlBuilderhMethod");
 		if(Specification.settings.getStringProperty("AddedText")!=null){
 			globalRemark = LineUtil.getFittedLines(Specification.settings.getStringProperty("AddedText"), maxWidthGlobalRemark);
@@ -146,8 +146,8 @@ public class OceanosXmlBuilderMethod implements XmlBuilderMethod{
 			while(iterator.hasNext()){
 				block = iterator.next();
 				processBlock(block);
-				if(block.getBlockType()==BlockType.DEFAULT && iterator.nextIndex()!=blockList.size()){
-					if(blockList.get(iterator.nextIndex()).getBlockType()==BlockType.ME){
+				if(block.blockType==BlockType.DEFAULT && iterator.nextIndex()!=blockList.size()){
+					if(blockList.get(iterator.nextIndex()).blockType==BlockType.ME){
 						newPage();
 						//addEmptyLines(1);
 						String string = "Устанавливается по " + Specification.settings.getStringProperty("MEDocumentId");
@@ -192,7 +192,7 @@ public class OceanosXmlBuilderMethod implements XmlBuilderMethod{
 	}
 	
 	public void processBlock(Block block){
-		System.out.println("Writing block: " + Specification.blockTitles.get(block.getBlockContentType()));
+		System.out.println("Writing block: " + Specification.blockTitles.get(block.blockContentType));
 		if(block.getListOfLines()!=null){
 			if (node_block == null) {
 				node_block = document.createElement("Block");
@@ -217,7 +217,7 @@ public class OceanosXmlBuilderMethod implements XmlBuilderMethod{
 			node_occ_title.setAttribute("font", "underline,bold,italic");
 			node = document.createElement("Col_" + 5);
 			node.setAttribute("align", "center");
-			node.setTextContent(block.getBlockTitle());
+			node.setTextContent(block.blockTitle);
 			node_occ_title.appendChild(node);
 			node_block.appendChild(node_occ_title);
 			currentLineNum++;
@@ -225,7 +225,7 @@ public class OceanosXmlBuilderMethod implements XmlBuilderMethod{
 			for(BlockLine blockLine : block.getListOfLines()){
 				newLine(block, blockLine);
 			}
-			addEmptyLines(block.getReserveLinesNum());
+			addEmptyLines(block.reserveLinesNum);
 			node_root.appendChild(node_block);
 		}
 	}

@@ -1,6 +1,6 @@
 package ru.idealplm.specification.oceanos.handlers.linehandlers;
 
-import ru.idealplm.utils.specification.BlockLine;
+import ru.idealplm.utils.specification.blockline.BlockLine;
 import ru.idealplm.utils.specification.BlockLineHandler;
 import ru.idealplm.utils.specification.Specification;
 import ru.idealplm.utils.specification.Specification.FormField;
@@ -36,7 +36,11 @@ public class OceanosBlockLineHandler implements BlockLineHandler{
 			bomLine.attributes.getRemark().insertAt(0, bomLine.getProperty("UOM"));
 		}
 		bomLine.attributes.getRemark().build();
-		if(bomLine.attributes.getRemark().size() > bomLine.lineHeight) bomLine.lineHeight = bomLine.attributes.getRemark().size();
+		
+		int lineHeight = 1;
+		if(bomLine.attributes.getRemark().size() > lineHeight) lineHeight = bomLine.attributes.getRemark().size();
+		if(bomLine.attributes.getName().size() > lineHeight) lineHeight = bomLine.attributes.getName().size();
+		bomLine.lineHeight = lineHeight;
 	}
 
 }

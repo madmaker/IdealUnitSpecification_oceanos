@@ -35,9 +35,9 @@ import com.teamcenter.services.rac.core._2008_06.DataManagement.ReviseOutput;
 import com.teamcenter.services.rac.core._2008_06.DataManagement.ReviseResponse2;
 
 import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.methods.AttachMethod;
+import ru.idealplm.utils.specification.methods.IAttachMethod;
 
-public class OceanosAttachMethod implements AttachMethod{
+public class OceanosAttachMethod implements IAttachMethod{
 	
 	private Specification specification = Specification.getInstance();
 	private TCComponentBOMLine topBOMLine;
@@ -50,7 +50,7 @@ public class OceanosAttachMethod implements AttachMethod{
 	public DataManagementService dmService;
 
 	@Override
-	public void putInTeamcenter() {
+	public void attachReportFile() {
 		try{
 			this.topBOMLine = specification.getTopBOMLine();
 			this.topIR = topBOMLine.getItemRevision();
@@ -61,7 +61,7 @@ public class OceanosAttachMethod implements AttachMethod{
 			System.out.println("...METHOD...  AttachMethod");
 			if(reportFile!=null){
 				try{
-					renamedReportFile = new File(reportFile.getAbsolutePath().substring(0, reportFile.getAbsolutePath().lastIndexOf('_'))+".pdf");
+					renamedReportFile = new File(Specification.getInstance().getXmlFile().getAbsolutePath().substring(0, Specification.getInstance().getXmlFile().getAbsolutePath().lastIndexOf("_"))+".pdf");
 					Files.deleteIfExists(renamedReportFile.toPath());
 					reportFile.renameTo(renamedReportFile);
 					System.out.println(reportFile.getAbsolutePath());
