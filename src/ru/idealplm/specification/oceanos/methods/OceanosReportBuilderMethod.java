@@ -42,8 +42,6 @@ public class OceanosReportBuilderMethod implements IReportBuilderMethod{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//Specification.settings.setTemplateStream(OceanosReportBuilderMethod.class.getResourceAsStream("/pdf/OceanosSpecPDFTemplate.xsl"));
-		//Specification.settings.setConfigStream(OceanosReportBuilderMethod.class.getResourceAsStream("/pdf/userconfig.xml"));
 		
 		pdfBuilder.passSourceFile(specification.getXmlFile(), this);
 		synchronized (this) {

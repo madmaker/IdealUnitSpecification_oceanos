@@ -113,10 +113,10 @@ public class SampleHandler extends AbstractHandler {
 		
 		if(!specification.validate()){
 			System.out.println(specification.getErrorList().toString());
+			ErrorListDialog elg = new ErrorListDialog(HandlerUtil.getActiveShell(event).getShell(), specification.getErrorList().errorList);
+			return null;
 		} else {
 			try{
-				// TODO Need to make it start async right when SP button is pressed
-				// ReportBuilder reportBuilder = new PDFBuilder(Specification.getDefaultSpecificationPDFTemplate(), Specification.getDefaultSpecificationPDFConfig());
 				PerfTrack.prepare("readBOMData");
 				ProgressMonitorDialog pd = new ProgressMonitorDialog(HandlerUtil.getActiveShell(event).getShell());
 				try {
@@ -146,9 +146,6 @@ public class SampleHandler extends AbstractHandler {
 				
 
 				mainDialog.open();
-				for(int i = 0; i < specification.getBlockList().size(); i++){
-					if(specification.getBlockList().get(i).getListOfLines()!=null) System.out.println("Size of " + specification.getBlockList().get(i).blockTitle + " = " + specification.getBlockList().get(i).getListOfLines().size());
-				}
 				
 				if (!Specification.settings.getBooleanProperty("bOkPressed")) { return null; }
 				
@@ -188,33 +185,23 @@ public class SampleHandler extends AbstractHandler {
 							System.out.println(specification.getErrorList().toString());
 							System.out.println("--- ERROR LIST ---");
 							
-							if(Specification.settings.getBooleanProperty("doRenumerize")){
-								PerfTrack.prepare("Saving&unlocking BOM");
-								try {
-									topBomLine.save();
-									topBomLine.unlock();
-								} catch (TCException e) {
-									e.printStackTrace();
-								}
-								PerfTrack.addToLog("Saving&unlocking BOM");
-							}
 							monitor.done();
 						}
 						});
 					} catch (InvocationTargetException | InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				
-				//if(Specification.settings.getBooleanProperty("doRenumerize")){
-				//}
+					
+					PerfTrack.prepare("Saving&unlocking BOM");
+					topBomLine.save();
+					topBomLine.unlock();
+					PerfTrack.addToLog("Saving&unlocking BOM");
 				
 				PerfTrack.printLog();
 			} catch (TCException e) {
 				e.printStackTrace();
 			} finally {
 				specification.cleanUp();
-				//specification = null;
 			}
 		}
 		return null;
@@ -222,13 +209,10 @@ public class SampleHandler extends AbstractHandler {
 	
 	void readSettings(BlockList blockList){
 		String settingsString = Specification.settings.getStringProperty("blockSettings");
-		System.out.println("BLOCK_SETTINGS"+settingsString);
 		if(settingsString==null || settingsString.isEmpty()) return;
 		for(String blockProps:settingsString.split("&")){
-			System.out.println(blockProps);
 			String[] props = blockProps.split(":");
 			if(props.length!=4) continue;
-			System.out.println(props[0]);
 			Block block = blockList.getBlock(BlockContentType.values()[Character.getNumericValue(props[0].charAt(0))], props[0].charAt(1)=='0'?BlockType.DEFAULT:BlockType.ME);
 			if(block!=null){
 				block.reservePosNum = Integer.parseInt(props[1]);

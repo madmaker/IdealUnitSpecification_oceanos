@@ -64,17 +64,13 @@ public class OceanosAttachMethod implements IAttachMethod{
 					renamedReportFile = new File(Specification.getInstance().getXmlFile().getAbsolutePath().substring(0, Specification.getInstance().getXmlFile().getAbsolutePath().lastIndexOf("_"))+".pdf");
 					Files.deleteIfExists(renamedReportFile.toPath());
 					reportFile.renameTo(renamedReportFile);
-					System.out.println(reportFile.getAbsolutePath());
-					System.out.println(renamedReportFile.getAbsolutePath());
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}
 			if(specIR != null) {
-				System.out.println("+++++++++++  SPREV!=NULL");
 				deletePrevSpecDatasetOfKd();
 			} else if (specIR == null) {
-				System.out.println("+++++++++++  SPREV==NULL");
 				TCComponentItem kdDoc = findKDDocItem();
 				if (kdDoc == null) {
 					System.out.println("CREATING KD ITEM WITH FIRST ITEMREVISION + SignForm!");
@@ -113,10 +109,8 @@ public class OceanosAttachMethod implements IAttachMethod{
 	
 			TCComponentDataset ds_new = createDatasetAndAddFile(specification.getReportFile().getAbsolutePath());
 			if (ds_new != null) {
-				System.out.println("Adding to item_id: " + specIR.getProperty("item_id"));
 				TCComponent tempComp;
 				if((tempComp = specIR.getRelatedComponent("Oc9_SignRel"))!=null){
-					System.out.println("+++++FOUND SIGN FORM!!!!");
 					tempComp.setProperty("oc9_Designer", Specification.settings.getStringProperty("Designer"));
 					tempComp.setProperty("oc9_Check", Specification.settings.getStringProperty("Check"));
 					tempComp.setProperty("oc9_TCheck", Specification.settings.getStringProperty("TCheck"));
@@ -131,16 +125,14 @@ public class OceanosAttachMethod implements IAttachMethod{
 				}
 				if(specIR.getRelatedComponent("IMAN_master_form_rev")!=null){
 					specIR.getRelatedComponent("IMAN_master_form_rev").setProperty("object_desc", Specification.settings.getStringProperty("blockSettings"));
-					/*Specification.settings.addStringProperty("blockSettings", specIR.getRelatedComponent("IMAN_master_form_rev").getProperty("object_desc"));*/
 				}
 				specIR.add("IMAN_specification", ds_new);
 				specIR.lock();
 				topBOMLine.getItemRevision().setProperty("oc9_AddNote", Specification.settings.getStringProperty("AddedText"));
-				//topBOMLine.getItemRevision().setProperty("oc9_AddNote", Specification.settings.getStringProperty("blockSettings"));
 				specIR.setProperty("oc9_Litera1", Specification.settings.getStringProperty("LITERA1"));
 				specIR.setProperty("oc9_Litera2", Specification.settings.getStringProperty("LITERA2"));
 				specIR.setProperty("oc9_Litera3", Specification.settings.getStringProperty("LITERA3"));
-				//specIR.getItem().setProperty("oc9_PrimaryApp", Specification.settings.getStringProperty("PERVPRIM"));
+				//specIR.getItem().setProperty("oc9_PrimaryApp", Specification.settings.getStringProperty("PERVPRIM")); //TODO
 				specIR.save();
 				specIR.unlock();
 				
