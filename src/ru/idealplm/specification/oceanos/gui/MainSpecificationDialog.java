@@ -113,15 +113,14 @@ public class MainSpecificationDialog extends Dialog {
 		TableItem blockItem;
 		while(iterator.hasNext()){
 			block = iterator.next();
-			System.out.println("In fill contents: " + block.getBlockTitle() + "=" + block.getListOfLines().size());
 			blockItem = new TableItem(table, SWT.NONE);
-			if(!block.getBlockTitle().equals("Документация")){
-				blockItem.setText(new String[]{block.getBlockTitle(), String.valueOf(block.getReservePosNum()), String.valueOf(block.getReserveLinesNum()), String.valueOf(block.getIntervalPosNum())});
+			if(!block.blockTitle.equals("Документация")){
+				blockItem.setText(new String[]{block.blockTitle, String.valueOf(block.reservePosNum), String.valueOf(block.reserveLinesNum), String.valueOf(block.intervalPosNum)});
 			} else {
-				blockItem.setText(new String[]{block.getBlockTitle(), String.valueOf(block.getReservePosNum()), String.valueOf(block.getReserveLinesNum()), String.valueOf(block.getIntervalPosNum())});
+				blockItem.setText(new String[]{block.blockTitle, String.valueOf(block.reservePosNum), String.valueOf(block.reserveLinesNum), String.valueOf(block.intervalPosNum)});
 			}
-			if(block.getBlockType()==BlockType.DEFAULT && iterator.nextIndex()!=blockList.size()){
-				if(blockList.get(iterator.nextIndex()).getBlockType()==BlockType.ME){
+			if(block.blockType==BlockType.DEFAULT && iterator.nextIndex()!=blockList.size()){
+				if(blockList.get(iterator.nextIndex()).blockType==BlockType.ME){
 					blockItem = new TableItem(table, SWT.NONE);
 					blockItem.setText(new String[]{"Устанавливается по\n" + Specification.settings.getStringProperty("MEDocumentId")});
 					blockItem.setGrayed(true);
@@ -146,7 +145,6 @@ public class MainSpecificationDialog extends Dialog {
 		String s_TCheckDate = Specification.settings.getStringProperty("TCheckDate");
 		String s_NCheckDate = Specification.settings.getStringProperty("NCheckDate");
 		String s_ApproveDate = Specification.settings.getStringProperty("ApproveDate");
-		System.out.println("::DATE::"+s_DesignDate);
 		if(s_DesignDate!=null) { dateDesigner.setDate(GeneralUtils.getDateFormSimpleString(s_DesignDate)); }else{ dateDesigner.setDate(""); }
 		if(s_CheckDate!=null) { dateCheck.setDate(GeneralUtils.getDateFormSimpleString(s_CheckDate)); }else{ dateCheck.setDate(""); }
 		if(s_TCheckDate!=null) { dateTCheck.setDate(GeneralUtils.getDateFormSimpleString(s_TCheckDate)); }else{ dateTCheck.setDate(""); }
@@ -418,14 +416,14 @@ public class MainSpecificationDialog extends Dialog {
 		
 		final Button button_ReadLastRevPos = new Button(compositeMain, SWT.CHECK);
 		button_ReadLastRevPos.setText("\u0417\u0430\u0447\u0438\u0442\u0430\u0442\u044C \u043F\u043E\u0437\u0438\u0446\u0438\u0438 \u0441 \u043F\u0440\u043E\u0448\u043B\u043E\u0439 \u0440\u0435\u0432\u0438\u0437\u0438\u0438");
-		button_ReadLastRevPos.setBounds(10, 258, 225, 16);
+		button_ReadLastRevPos.setBounds(10, 258, 266, 16);
 		button_ReadLastRevPos.setEnabled(Specification.settings.getBooleanProperty("canReadLastRevPos"));
 		button_ReadLastRevPos.setVisible(true);
 		//button_ReadLastRevPos.setEnabled(false);
 		
 		final Button button_UseReservePos = new Button(compositeMain, SWT.CHECK);
 		button_UseReservePos.setText("\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u0440\u0435\u0437\u0435\u0440\u0432 \u043F\u043E\u0437\u0438\u0446\u0438\u0439");
-		button_UseReservePos.setBounds(10, 282, 225, 16);
+		button_UseReservePos.setBounds(10, 280, 225, 16);
 		button_UseReservePos.setEnabled(Specification.settings.getBooleanProperty("canUseReservePos"));
 		button_UseReservePos.setVisible(true);
 		//button_UseReservePos.setEnabled(false);
@@ -435,39 +433,39 @@ public class MainSpecificationDialog extends Dialog {
 		button_ShowAdditionalForm.setText("Показать дополнительную форму");
 		
 		Label label = new Label(compositeMain, SWT.NONE);
-		label.setBounds(10, 317, 136, 13);
+		label.setBounds(10, 324, 136, 13);
 		label.setText("\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0439 \u0442\u0435\u043A\u0441\u0442");
 		
 		text_AddedText = new Text(compositeMain, SWT.BORDER | SWT.V_SCROLL);
-		text_AddedText.setBounds(10, 336, 424, 78);
+		text_AddedText.setBounds(10, 340, 424, 78);
 		
 		text_PrimaryApp = new Text(compositeMain, SWT.BORDER);
-		text_PrimaryApp.setBounds(10, 437, 154, 19);
+		text_PrimaryApp.setBounds(10, 443, 154, 19);
 		
 		Label label_1 = new Label(compositeMain, SWT.NONE);
 		label_1.setText("\u041F\u0435\u0440\u0432\u0438\u0447\u043D\u0430\u044F \u043F\u0440\u0438\u043C\u0435\u043D\u044F\u0435\u043C\u043E\u0441\u0442\u044C");
-		label_1.setBounds(10, 420, 160, 13);
+		label_1.setBounds(10, 424, 160, 13);
 		
 		Label label_litera_1 = new Label(compositeMain, SWT.NONE);
 		label_litera_1.setText("\u041B\u0438\u0442\u0435\u0440\u0430 1");
-		label_litera_1.setBounds(10, 460, 76, 13);
+		label_litera_1.setBounds(10, 466, 76, 13);
 		
 		text_Litera1 = new Text(compositeMain, SWT.BORDER);
-		text_Litera1.setBounds(10, 477, 76, 19);
+		text_Litera1.setBounds(10, 484, 76, 19);
 		
 		Label label_litera_2 = new Label(compositeMain, SWT.NONE);
 		label_litera_2.setText("\u041B\u0438\u0442\u0435\u0440\u0430 2");
-		label_litera_2.setBounds(96, 460, 76, 13);
+		label_litera_2.setBounds(92, 466, 76, 13);
 		
 		text_Litera2 = new Text(compositeMain, SWT.BORDER);
-		text_Litera2.setBounds(96, 477, 76, 19);
+		text_Litera2.setBounds(92, 484, 76, 19);
 		
 		Label label_litera_3 = new Label(compositeMain, SWT.NONE);
 		label_litera_3.setText("\u041B\u0438\u0442\u0435\u0440\u0430 3");
-		label_litera_3.setBounds(182, 460, 76, 13);
+		label_litera_3.setBounds(174, 466, 76, 13);
 		
 		text_Litera3 = new Text(compositeMain, SWT.BORDER);
-		text_Litera3.setBounds(182, 477, 76, 19);
+		text_Litera3.setBounds(174, 484, 76, 19);
 		
 		Button btnOk = new Button(compositeMain, SWT.NONE);
 		btnOk.addSelectionListener(new SelectionAdapter() {
@@ -503,9 +501,9 @@ public class MainSpecificationDialog extends Dialog {
 				for(int i = 0; i < table.getItemCount(); i++){
 					TableItem tableItem = table.getItem(i);
 					if(tableItem.getText(0).startsWith("Устанавливается")) continue;
-					blockList.get(j).setReservePosNum(Integer.parseInt(tableItem.getText(1).isEmpty()?"0":tableItem.getText(1)));
-					blockList.get(j).setReserveLinesNum(Integer.parseInt(tableItem.getText(2).isEmpty()?"0":tableItem.getText(2)));
-					blockList.get(j).setIntervalPosNum(Integer.parseInt(tableItem.getText(3).isEmpty()?"0":tableItem.getText(3)));
+					blockList.get(j).reservePosNum = Integer.parseInt(tableItem.getText(1).isEmpty()?"0":tableItem.getText(1));
+					blockList.get(j).reserveLinesNum = Integer.parseInt(tableItem.getText(2).isEmpty()?"0":tableItem.getText(2));
+					blockList.get(j).intervalPosNum = Integer.parseInt(tableItem.getText(3).isEmpty()?"0":tableItem.getText(3));
 					j++;
 				}
 				/*ListIterator<Block> iterator = blockList.listIterator();
@@ -534,7 +532,7 @@ public class MainSpecificationDialog extends Dialog {
 			}
 		});
 		
-		btnOk.setBounds(139, 512, 68, 23);
+		btnOk.setBounds(139, 510, 68, 23);
 		btnOk.setText("OK");
 		
 		button_Renumerize.addSelectionListener(new SelectionAdapter() {
@@ -552,7 +550,7 @@ public class MainSpecificationDialog extends Dialog {
 			}
 		});
 		btnCancel.setText("Cancel");
-		btnCancel.setBounds(229, 512, 68, 23);
+		btnCancel.setBounds(228, 510, 68, 23);
 		
 		PerfTrack.addToLog("Creating contents");
 	}

@@ -7,7 +7,7 @@ import com.teamcenter.rac.kernel.TCComponentItem;
 import com.teamcenter.rac.kernel.TCComponentItemRevision;
 
 import ru.idealplm.specification.oceanos.handlers.linehandlers.OceanosBlockLineHandler;
-import ru.idealplm.utils.specification.BlockLine;
+import ru.idealplm.utils.specification.blockline.BlockLine;
 import ru.idealplm.utils.specification.BlockLineFactory;
 import ru.idealplm.utils.specification.Error;
 import ru.idealplm.utils.specification.Specification;
@@ -45,7 +45,6 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 			resultBlockLine.attributes.setZone(properties[0]);
 			resultBlockLine.attributes.setPosition(properties[1]);
 			resultBlockLine.isRenumerizable = properties[5].trim().equals("");
-			System.out.println("DISAB["+properties[5]+"]" + " so "+resultBlockLine.isRenumerizable);
 			resultBlockLine.uid = uid;
 			
 			if(item.getType().equals("Oc9_CompanyPart")){
@@ -124,7 +123,6 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 								String docID = relatedDoc.getComponent().getProperty("item_id");
 								if(docID.equals(blankItem.getProperty("item_id"))){
 									String format = ((TCComponentItem)relatedDoc.getComponent()).getLatestItemRevision().getProperty("oc9_Format");
-									System.out.println("FORMATFOR:"+format);
 									blank.attributes.setFormat(format);
 									break;
 								}
@@ -201,6 +199,10 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 						Specification.errorList.addError(new Error("ERROR", "¬ составе геометрии материала с идентификатором " + item.getProperty("item_id") + " присутствует более одного материала."));
 					}
 					TCComponentItemRevision materialIR = ((TCComponentBOMLine) materialBOMLines[0].getComponent()).getItemRevision();
+					TCComponentItem materialI = ((TCComponentBOMLine) materialBOMLines[0].getComponent()).getItem();
+					if(materialI.getProperty("oc9_RightName").equals("Ќаименование не согласовано")){
+						resultBlockLine.addProperty("bNameNotApproved", "true");
+					}
 					String quantityMS = ((TCComponentBOMLine) materialBOMLines[0].getComponent()).getProperty("bl_quantity");
 					float quantityMD = Float.parseFloat(quantityMS.equals("")?"1":quantityMS);
 					int quantotyGD = Integer.parseInt(properties[2].equals("")?"1":properties[2]);

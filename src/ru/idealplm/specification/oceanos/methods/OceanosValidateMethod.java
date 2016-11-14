@@ -9,14 +9,14 @@ import com.teamcenter.rac.kernel.TCComponentItem;
 import ru.idealplm.utils.specification.Error;
 import ru.idealplm.utils.specification.ErrorList;
 import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.methods.ValidateMethod;
+import ru.idealplm.utils.specification.methods.IValidateMethod;
 
-public class OceanosValidateMethod implements ValidateMethod{
+public class OceanosValidateMethod implements IValidateMethod{
 
 	private Specification specification = Specification.getInstance();
 	
 	@Override
-	public boolean validate() {
+	public boolean validateData() {
 		System.out.println("...METHOD... ValidateMethod");
 		ArrayList<String> acceptableTypesOfPart = new ArrayList<String>(Arrays.asList("Сборочная единица", "Комплект", "Комплекс"));
 		

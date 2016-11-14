@@ -23,17 +23,17 @@ import com.teamcenter.rac.kernel.TCException;
 import ru.idealplm.specification.oceanos.handlers.OceanosBlockLineFactory;
 import ru.idealplm.specification.oceanos.handlers.linehandlers.OceanosBlockLineHandler;
 import ru.idealplm.specification.oceanos.util.PerfTrack;
-import ru.idealplm.utils.specification.BlockLine;
+import ru.idealplm.utils.specification.blockline.BlockLine;
 import ru.idealplm.utils.specification.BlockList;
 import ru.idealplm.utils.specification.Error;
 import ru.idealplm.utils.specification.Specification;
 import ru.idealplm.utils.specification.Specification.BlockContentType;
 import ru.idealplm.utils.specification.Specification.BlockType;
 import ru.idealplm.utils.specification.Specification.FormField;
-import ru.idealplm.utils.specification.methods.DataReaderMethod;
+import ru.idealplm.utils.specification.methods.IDataReaderMethod;
 import ru.idealplm.utils.specification.util.GeneralUtils;
 
-public class OceanosDataReaderMethod implements DataReaderMethod{
+public class OceanosDataReaderMethod implements IDataReaderMethod{
 	
 	private Specification specification = Specification.getInstance();
 	private BlockList blockList;
@@ -92,23 +92,20 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 					if(line.blockType == BlockType.ME) atLeastOneME = true;
 					if(!line.isRenumerizable) {
 						atLeastOnePosIsFixed = true;
-						System.out.println("NOTRENUM:"+line.attributes.getId());
 					}
 					validateBOMLineAttributess(line);
 					
 					if(line.blockContentType == BlockContentType.MATERIALS){
-						if(materialUIDs.containsKey(line.uid+line.getProperty("SE Cut Length"))){
-								BlockLine storedLine = materialUIDs.get(line.uid+line.getProperty("SE Cut Length"));
+						if(materialUIDs.containsKey(line.uid/*+line.getProperty("SE Cut Length")*/)){
+								BlockLine storedLine = materialUIDs.get(line.uid/*+line.getProperty("SE Cut Length")*/);
 								if(storedLine.getProperty("FromGeomMat").isEmpty()){
 									storedLine.addProperty("FromGeomMat", line.getProperty("FromGeomMat"));
 								}
 								if(storedLine.getProperty("FromMat").isEmpty()){
 									storedLine.addProperty("FromMat", line.getProperty("FromMat"));
 								}
-								System.out.println("ALREADY GOT ONE ^" + line.attributes.getId());
 								if(line.getProperty("SE Cut Length").isEmpty() && storedLine.getProperty("SE Cut Length").isEmpty()){
 									// If both are null, then we just update stored line attributes with current line attributes
-									System.out.println("BOTH NULL");
 									storedLine.attributes.createKits();
 									storedLine.attributes.addKit(line.attributes.getKits());
 									storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
@@ -116,17 +113,15 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 								} else if(!line.getProperty("SE Cut Length").isEmpty() && !storedLine.getProperty("SE Cut Length").isEmpty()) {
 									// If both have different SE Cut Length attribute values then we attach current line to stored one
 									// Later it will be detached and added directly to block
-									System.out.println("BOTH NOT NULL");
 									storedLine.getAttachedLines().add(line);
 								} else {
 									// If one is empty and other one is not, then we have an error
 									// It is not allowed for the same material to have 2 occurences,
 									// where one of them does have SE Cut Length attribute and the other one doesn't
-									System.out.println("BOTH DIFFERENT");
-									specification.getErrorList().addError(new Error("ERROR", "Отсутствует значение атрибута SE Cut Length для материала с именем "+line.attributes.getStringValueFromField(FormField.ID)));
+									specification.getErrorList().addError(new Error("ERROR", "Отсутствует значение атрибута SE Cut Length для материала с именем "+line.attributes.getStringValueFromField(FormField.NAME)));
 								}
 						} else {
-							materialUIDs.put(line.uid+line.getProperty("SE Cut Length"), line);
+							materialUIDs.put(line.uid/*+line.getProperty("SE Cut Length")*/, line);
 							blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid+line.getProperty("SE Cut Length"), line);
 						}
 					} else {
@@ -144,7 +139,7 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 	}
 
 	@Override
-	public void readBOMData() {
+	public void readData() {
 		try{
 			loadDocumentTypes();
 			blockList = specification.getBlockList();
@@ -199,13 +194,13 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 				bomLineProcessor.run();
 			}
 			
-			for (AIFComponentContext currBOMLineContext : childBOMLines){
+			/*for (AIFComponentContext currBOMLineContext : childBOMLines){
 				if(!((TCComponentBOMLine) currBOMLineContext.getComponent()).getItem().getType().equals("Oc9_Material")){
 					((TCComponentBOMLine) currBOMLineContext.getComponent()).pack();
 				} else if(((TCComponentBOMLine) currBOMLineContext.getComponent()).getProperty("SE Cut Length").isEmpty()){
 					((TCComponentBOMLine) currBOMLineContext.getComponent()).pack();
 				}
-			}
+			}*/
 			
 			BlockList tempList = new BlockList();
 			for(int i = 0; i < blockList.size(); i++){
@@ -224,7 +219,6 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 		        if(!line.getProperty("FromMat").isEmpty() && !line.getProperty("FromGeomMat").isEmpty() && !line.getProperty("SE Cut Length").isEmpty()){
 		        	specification.getErrorList().addError(new Error("ERROR", "Материал с заполненным атрибутом SE Cut Length дублируется в составе геометрии материала. Имя: " + line.attributes.getStringValueFromField(FormField.NAME)));
 		        }
-		        System.out.println(pair.getKey() + " = " + pair.getValue());
 		        it.remove(); // avoids a ConcurrentModificationException
 		    }
 			
@@ -289,17 +283,11 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 			for(TCComponent document : documents){
 				documentIR = ((TCComponentItem)document).getLatestItemRevision();
 				name = "";
-				/*if(documentIR.getProperty("oc9_Format").length() > Specification.columnLengths.get(Specification.FormField.FORMAT)-1){					
-					format = "*)";
-					remark = "*) " + documentIR.getProperty("oc9_Format");
-				} else {
-				}*/
 				uid = documentIR.getUid();
 				format = documentIR.getProperty("oc9_Format");
 				id = document.getProperty("item_id");
 				object_name = documentIR.getProperty("object_name"); 
 				shortType = getType(id);
-				System.out.println("FOUND short type:"+shortType);
 				if(id.equals(IRid)){
 					specification.setSpecificationItemRevision(documentIR);
 					Specification.settings.addStringProperty("LITERA1", documentIR.getProperty("oc9_Litera1"));
@@ -398,8 +386,6 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 					String tCheckDate = tempComp.getProperty("oc9_TCheckDate").equals("")?null:GeneralUtils.parseDateFromTC(tempComp.getProperty("oc9_TCheckDate"));
 					String nCheckDate = tempComp.getProperty("oc9_NCheckDate").equals("")?null:GeneralUtils.parseDateFromTC(tempComp.getProperty("oc9_NCheckDate"));
 					String approveDate = tempComp.getProperty("oc9_ApproveDate").equals("")?null:GeneralUtils.parseDateFromTC(tempComp.getProperty("oc9_ApproveDate"));
-					System.out.println(":DATE1:"+tempComp.getProperty("oc9_DesignDate"));
-					System.out.println(":DATE2:"+designDate);
 					Specification.settings.addStringProperty("DesignDate", designDate);
 					Specification.settings.addStringProperty("CheckDate", checkDate);
 					Specification.settings.addStringProperty("TCheckDate", tCheckDate);
@@ -430,7 +416,6 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 		for(String docType : docTypes){
 			int posOfFirstSpace = docType.indexOf(" ");
 			if(posOfFirstSpace!=-1){
-				System.out.println("FOUND value of pref:"+docType+":"+ docType.substring(0, posOfFirstSpace) +":"+docType.substring(posOfFirstSpace + 1, docType.length()));
 				docTypesShort.add(docType.substring(0, posOfFirstSpace));
 				docTypesLong.add(docType.substring(posOfFirstSpace + 1, docType.length()));
 			}
@@ -439,7 +424,6 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 		for(String docKitType : docKitTypes){
 			int posOfFirstSpace = docKitType.indexOf(" ");
 			if(posOfFirstSpace!=-1){
-				System.out.println("FOUND value of pref:"+docKitType+":"+ docKitType.substring(0, posOfFirstSpace) +":"+docKitType.substring(posOfFirstSpace + 1, docKitType.length()));
 				docKitTypesShort.add(docKitType.substring(0, posOfFirstSpace));
 				docKitTypesLong.add(docKitType.substring(posOfFirstSpace + 1, docKitType.length()));
 			}
@@ -454,7 +438,6 @@ public class OceanosDataReaderMethod implements DataReaderMethod{
 			return result;
 		}
 		String symbolPart = input.replaceAll("[^А-Яа-я]+", "");
-		System.out.println("LOOKING for:"+input+":"+symbolPart);
 		for(String type : docTypesShort){
 			if(type.equals(input) && type.length()==input.length()){
 				result = type;

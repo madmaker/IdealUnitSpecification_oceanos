@@ -2,7 +2,7 @@ package ru.idealplm.specification.oceanos.comparators;
 
 import java.util.Comparator;
 
-import ru.idealplm.utils.specification.BlockLine;
+import ru.idealplm.utils.specification.blockline.BlockLine;
 import ru.idealplm.utils.specification.Specification.FormField;
 
 public class DetailComparator implements Comparator<BlockLine> {
@@ -18,7 +18,7 @@ public class DetailComparator implements Comparator<BlockLine> {
 			return -1;
 		}
 		
-		DefaultComparator dc = new DefaultComparator(FormField.NAME);
+		DefaultComparator dc = new DefaultComparator(FormField.ID);
 		
 		return dc.compare(bl0, bl1);
 	}

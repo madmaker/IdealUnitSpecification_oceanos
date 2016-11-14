@@ -16,27 +16,43 @@ import org.xml.sax.SAXException;
 
 import ru.idealplm.utils.specification.Specification;
 import ru.idealplm.utils.specification.SpecificationSettings;
-import ru.idealplm.utils.specification.methods.ReportBuilderMethod;
+import ru.idealplm.utils.specification.methods.IReportBuilderMethod;
 import ru.idealplm.xml2pdf2.handlers.PDFBuilder;
 
-public class OceanosReportBuilderMethod implements ReportBuilderMethod{
+public class OceanosReportBuilderMethod implements IReportBuilderMethod{
 
 	private Specification specification = Specification.getInstance();
+	private PDFBuilder pdfBuilder;
+	
+	public OceanosReportBuilderMethod(InputStream templateStream, InputStream configStream) {
+		try {
+			pdfBuilder = new PDFBuilder(templateStream, configStream);
+		} catch (Exception e) {
+			System.out.println("Unable to create PDFBuilder\n" + "templateStream==null?"+(templateStream==null)+"\nconfigStream==null?"+(configStream==null));
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
-	public File makeReportFile() {
+	public File buildReportFile() {
 		System.out.println("...METHOD... ReportBuilderMethod");
+		File reportFile = null;
 		try {
 			copy(OceanosReportBuilderMethod.class.getResourceAsStream("/icons/iconOceanos.jpg"), new File(specification.getXmlFile().getParentFile().getAbsolutePath()+"\\iconOceanos.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		/*writeToConsole(specification.getXmlFile(), "XML");
-		writeToConsole(Specification.settings.getConfigStream(), "CONFIG");
-		writeToConsole(Specification.settings.getTemplateStream(), "TEMPLATE");*/
-		Specification.settings.setTemplateStream(OceanosReportBuilderMethod.class.getResourceAsStream("/pdf/OceanosSpecPDFTemplate.xsl"));
-		Specification.settings.setConfigStream(OceanosReportBuilderMethod.class.getResourceAsStream("/pdf/userconfig.xml"));
-		return PDFBuilder.xml2pdf(specification.getXmlFile(),  Specification.settings.getTemplateStream(), Specification.settings.getConfigStream());
+		
+		pdfBuilder.passSourceFile(specification.getXmlFile(), this);
+		synchronized (this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		reportFile = pdfBuilder.getReport();
+		return reportFile;
 	}
 	
 	public static void copy(InputStream source, File dest) throws IOException {

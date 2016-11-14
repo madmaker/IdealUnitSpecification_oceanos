@@ -2,7 +2,7 @@ package ru.idealplm.specification.oceanos.comparators;
 
 import java.util.Comparator;
 
-import ru.idealplm.utils.specification.BlockLine;
+import ru.idealplm.utils.specification.blockline.BlockLine;
 import ru.idealplm.utils.specification.Specification.FormField;
 
 public class MaterialComparator implements Comparator<BlockLine>{
@@ -16,16 +16,13 @@ public class MaterialComparator implements Comparator<BlockLine>{
 		String cutLength0 = line0.getProperty("SE Cut Length");
 		String cutLength1 = line1.getProperty("SE Cut Length");
 		if(!cutLength0.isEmpty() && cutLength1.isEmpty()){
-			System.out.println("0>1");
 			return -1;
 		} else if (cutLength0.isEmpty() && !cutLength1.isEmpty()) {
-			System.out.println("0<1");
 			return 1;
 		}
 		if(!cutLength0.isEmpty() && !cutLength1.isEmpty()){
 			field0 = line0.getProperty("CleanName") + line0.uid + cutLength0;
 			field1 = line1.getProperty("CleanName") + line1.uid + cutLength1;
-			System.out.println("...comparing "+ field0 + " and " + field1);
 		} else {
 			field0 = line0.getProperty("CleanName");
 			field1 = line1.getProperty("CleanName");
