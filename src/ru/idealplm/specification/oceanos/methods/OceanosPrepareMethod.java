@@ -36,14 +36,12 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 	private HashMap<String,String> lengthCutToPosMap = new HashMap<String, String>();
 
 	@Override
-	public void prepareData()
-	{
+	public void prepareData() {
 		try{
 			this.specification = Specification.getInstance();
 			System.out.println("...METHOD...  PrepareMethod");
 			
 			for(Block block:specification.getBlockList()) {
-				// Без понятия для чего это
 				if(block.blockContentType==BlockContentType.MATERIALS){
 					for(BlockLine l:block.getListOfLines()){
 						for(BlockLine attached:l.getAttachedLines()){
@@ -52,30 +50,28 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 						l.attachedLines.clear();
 					}
 					block.getListOfLines().addAll(postAddMat);
-				}
-				// Для бомлайнов с пустым номером позиции назначаем такой же номер позиции, как и у бомлайнов с заполненным номером позиции (если айтем тот же)
-				for(BlockLine bl:block.getListOfLines()){
-					if(!bl.isSubstitute){
-						if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
-							for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
-								try {
-									chbl.setProperty("bl_sequence_no", bl.attributes.getPosition());
-								} catch (TCException e) {
-									e.printStackTrace();
-									if(block.blockContentType==BlockContentType.MATERIALS) System.out.println("-> setting seq no " + bl.attributes.getPosition() + " for " + bl.attributes.getName() + " failed");
+				}// else {
+					for(BlockLine bl:block.getListOfLines()){
+						if(!bl.isSubstitute){
+							try {
+								if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
+									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
+										chbl.setProperty("bl_sequence_no", bl.attributes.getPosition());
+										if(block.blockContentType==BlockContentType.MATERIALS) System.out.println("/| setting seq no " + bl.attributes.getPosition() + " for " + bl.attributes.getId());
+										//TODO chbl.setProperty("Oc9_DisChangeFindNo", "true"); for mvm
+									}
 								}
-								//TODO chbl.setProperty("Oc9_DisChangeFindNo", "true"); for mvm
+							} catch (TCException e) {
+								e.printStackTrace();
 							}
 						}
 					}
-				}
-				block.sort(false);
+				//}
+				block.sort(true);
 			}
 			
-			if(Specification.settings.getBooleanProperty("doReadLastRevPos"))
-			{
+			if(Specification.settings.getBooleanProperty("doReadLastRevPos")){
 				System.out.println("...READING LAST REV");
-				clearAllPositions();
 				TCComponentItemRevision prevRev = null;
 				TCComponentItem topItem = Specification.getInstance().getTopBOMLine().getItem();
 				TCComponentItemRevision topItemR = Specification.getInstance().getTopBOMLine().getItemRevision();
@@ -84,6 +80,8 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 				for(int i = 0; i < revisions.length; i++){
 					if(revisions[i].getUid().equals(topItemR.getUid()) && i>0){
 						prevRev = (TCComponentItemRevision) revisions[i-1];
+						System.out.println(revisions[i].getProperty("object_name"));
+						System.out.println(revisions[i-1].getProperty("object_name"));
 						break;
 					}
 				}
@@ -92,14 +90,11 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 					if(!block.isRenumerizable) continue;
 					for(BlockLine bl:block.getListOfLines()){
 						if(!bl.isSubstitute){
-							String currentPos =null;
-							if(bl.blockContentType==BlockContentType.MATERIALS){
-								currentPos = prevPosMap.get(bl.uid + bl.getProperty("SE Cut Length"));
-							} else {
-								currentPos = prevPosMap.get(bl.uid);
-							}
-							if(currentPos==null) currentPos = "";
+							String currentPos = prevPosMap.get(bl.uid);
+							if(currentPos==null) continue;
+							System.out.println("FOUND PREV FOR " + bl.uid);
 							try {
+								//bl.renumerize(String.valueOf(currentPos));
 								bl.attributes.setPosition(currentPos);
 								if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
@@ -121,11 +116,23 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 				}
 			}
 			
-			if(Specification.settings.getBooleanProperty("doRenumerize"))
-			{
+			if(Specification.settings.getBooleanProperty("doRenumerize")){
 				System.out.println("...RENUMERIZING");
 				String currentPos = "1"; // 
-				clearAllPositions();
+				for(Block block:specification.getBlockList()) {
+					if(!block.isRenumerizable) continue;
+					for(BlockLine bl:block.getListOfLines()){
+						if(!bl.isSubstitute){
+							for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
+								try{
+									chbl.setProperty("bl_sequence_no", "");
+								}catch(Exception ex){
+									ex.printStackTrace();
+								}
+							}
+						}
+					}
+				}
 				
 				for(Block block:specification.getBlockList()) {
 					if(!block.isRenumerizable) continue;
@@ -158,8 +165,9 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 								
 								if(bl.getRefBOMLines()!=null && !bl.isSubstitute){
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
+										System.out.println("SETTING bl sequence no " + bl.attributes.getPosition() + " for " + bl.attributes.getStringValueFromField(FormField.NAME));
 										try{
-											chbl.setProperty("bl_sequence_no", bl.attributes.getPosition());
+											chbl.setProperty("bl_sequence_no", /*currentPos*/bl.attributes.getPosition());
 										}catch(Exception ex){
 											ex.printStackTrace();
 										}
@@ -168,6 +176,7 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 								
 								if(bl.getSubstituteBlockLines()!=null){
 									for(BlockLine sbl:bl.getSubstituteBlockLines()){
+										System.out.println("SETTING " + currentPos + "* for " + sbl.attributes.getStringValueFromField(FormField.NAME));
 										sbl.attributes.setPosition(currentPos+"*");
 									}
 								}
@@ -180,8 +189,7 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 				}
 			}
 			
-			if(Specification.settings.getBooleanProperty("doUseReservePos"))
-			{
+			if(Specification.settings.getBooleanProperty("doUseReservePos")){
 				System.out.println("...USING RESERVE POS");
 				int currentPos = 1;
 				for(Block block:specification.getBlockList()) {
@@ -231,15 +239,6 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 					Collections.sort(block.getListOfLines(), new PositionComparator());
 				}
 			}
-			
-			AIFComponentContext[] childBOMLines = Specification.getInstance().getTopBOMLine().getChildren();
-			
-			for (AIFComponentContext currBOMLine : childBOMLines) {
-				TCComponentBOMLine bl = (TCComponentBOMLine) currBOMLine.getComponent();
-				bl.pack();
-			}
-			Specification.getInstance().getTopBOMLine().refresh();
-			
 			//specification.getBlockList().getBlock(BlockContentType.DOCS, "Default").run();
 	
 		} catch (Exception ex){
@@ -247,141 +246,92 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 		}
 	}
 	
-	private void clearAllPositions()
-	{
+	void readDataFromPrevRev(TCComponentItemRevision rev){
 		try{
-			for (AIFComponentContext currBOMLine : Specification.getInstance().getTopBOMLine().getChildren()) {
-				TCComponentBOMLine bl = (TCComponentBOMLine) currBOMLine.getComponent();
-				bl.pack();
-				bl.refresh();
-			}
-			Specification.getInstance().getTopBOMLine().refresh();
-		} catch (Exception ex){
-			ex.printStackTrace();
-		}
-		
-		for(Block block:specification.getBlockList()) {
-			if(!block.isRenumerizable) continue;
-			block.sort(true);
-			for(BlockLine bl:block.getListOfLines()){
-				if(!bl.isSubstitute){
-					for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
-						try{
-							chbl.setProperty("bl_sequence_no", "");
-						}catch(Exception ex){
-							ex.printStackTrace();
-						}
-					}
-				}
-			}
-		}
-		
-		try{
-			for (AIFComponentContext currBOMLine : Specification.getInstance().getTopBOMLine().getChildren()) {
-				TCComponentBOMLine bl = (TCComponentBOMLine) currBOMLine.getComponent();
-				if (bl.isPacked()) {
-					bl.unpack();
-					bl.refresh();
-				}
-			}
-			Specification.getInstance().getTopBOMLine().refresh();
-		} catch (Exception ex){
-			ex.printStackTrace();
-		}
-	}
-	
-	void readDataFromPrevRev(TCComponentItemRevision rev)
-	{
-		try{
+			System.out.println("REVNO:"+String.valueOf(rev.getProperty("revision_number")));
 			TCComponentBOMLine topBOMLine = getBOMLine(rev, "view", "Released", Specification.session);
+			System.out.println("REVNO:"+String.valueOf(topBOMLine.getProperty("bl_rev_revision_number")));
 			AIFComponentContext[] childBOMLines = topBOMLine.getChildren();
 			
 			for (AIFComponentContext currBOMLine : childBOMLines) {
 				TCComponentBOMLine bl = (TCComponentBOMLine) currBOMLine.getComponent();
-				if(bl.getItem().getType().equals("Oc9_Material")){
-					prevPosMap.put(bl.getItemRevision().getUid() + bl.getProperty("SE Cut Length"), bl.getProperty("bl_sequence_no"));
-				} else {
-					prevPosMap.put(bl.getItemRevision().getUid(), bl.getProperty("bl_sequence_no"));
-				}
+				prevPosMap.put(bl.getItemRevision().getUid(), bl.getProperty("bl_sequence_no"));
+				System.out.println("PUT_"+bl.getItemRevision().getUid()+" FOR "+bl.getProperty("bl_sequence_no"));
 			}
 		} catch (Exception ex){
 			ex.printStackTrace();
 		}
 	}
-	
-	public TCComponentBOMLine getBOMLine(TCComponentItemRevision rev, String bvrType, String revisionRule, TCSession session) throws Exception
-	{
-		TCComponentBOMViewRevision bomViewRevision = null;
-		TCComponentBOMWindow bomWindow = null;
-		TCComponentRevisionRule revRule = null;
-		bomViewRevision = getBomViewRevByType(rev, bvrType);
-		if(revisionRule.equals("")){
-			revRule = null;
-		} else {
-			revRule = (TCComponentRevisionRule)getRevRule(session, revisionRule);
-		}
-		bomWindow = createBomWindow(session, revRule);
-		TCComponentBOMView bomView = getBomView(rev.getItem(), bvrType);
-		TCComponentBOMLine bomLine = bomWindow.setWindowTopLine(rev.getItem(), rev, bomView, bomViewRevision);
-		return bomLine;
-	}
+		public TCComponentBOMLine getBOMLine(TCComponentItemRevision rev, String bvrType, String revisionRule, TCSession session) 
+			                        throws Exception
+			        {
+			                TCComponentBOMViewRevision bomViewRevision = null;
+			                TCComponentBOMWindow bomWindow = null;
+			                TCComponentRevisionRule revRule = null;
+			                bomViewRevision = getBomViewRevByType(rev, bvrType);
+			                if(revisionRule.equals("")){
+			                        revRule = null;
+			                } else {
+			                        revRule = (TCComponentRevisionRule)getRevRule(session, revisionRule);
+			                }
+			                bomWindow = createBomWindow(session, revRule);
+			                TCComponentBOMView bomView = getBomView(rev.getItem(), bvrType);
+			                TCComponentBOMLine bomLine = bomWindow.setWindowTopLine(rev.getItem(), rev, bomView, bomViewRevision);
+			                return bomLine;
+			        }
 			        
-	public TCComponentBOMViewRevision getBomViewRevByType(TCComponentItemRevision rev, String type)
-	{
-		try{
-			TCComponent[] structureRevisions = rev.getRelatedComponents("structure_revisions");
-			if(structureRevisions!=null){
-				return (TCComponentBOMViewRevision)structureRevisions[0];
-			} else {
-				return null;
-			}
-		} catch(Exception ex){
-			ex.printStackTrace();
-			return null;
-		}
-	}
+			        public TCComponentBOMViewRevision getBomViewRevByType(TCComponentItemRevision rev, String type){
+			                try{
+			                        TCComponent[] structureRevisions = rev.getRelatedComponents("structure_revisions");
+			                        if(structureRevisions!=null){
+			                                return (TCComponentBOMViewRevision)structureRevisions[0];
+			                        } else {
+			                                return null;
+			                        }
+			                } catch(Exception ex){
+			                        ex.printStackTrace();
+			                        return null;
+		                }
+			        }
 			        
-	public TCComponent getRevRule(TCSession session, String rule)
-	{
-		try{
-			TCComponentRevisionRuleType rrType = (TCComponentRevisionRuleType)session.getTypeComponent("RevisionRule");
-			TCComponent[] rrComponents = rrType.extent();
-			for(TCComponent rrComponent:rrComponents){
-				if(rrComponent.toString().equalsIgnoreCase(rule)){
-					return rrComponent;
-			    }
-			}
-			return null;
-		} catch (Exception ex){
-			ex.printStackTrace();
-			return null;
-		}
-	}
+			        public TCComponent getRevRule(TCSession session, String rule){
+			                try{
+			                        TCComponentRevisionRuleType rrType = (TCComponentRevisionRuleType)session.getTypeComponent("RevisionRule");
+			                        TCComponent[] rrComponents = rrType.extent();
+			                        for(TCComponent rrComponent:rrComponents){
+			                                if(rrComponent.toString().equalsIgnoreCase(rule)){
+			                                        return rrComponent;
+			                                }
+			                        }
+			                        return null;
+			                } catch (Exception ex){
+			                        ex.printStackTrace();
+			                        return null;
+			                }
+			        }
 			        
-	public TCComponentBOMWindow createBomWindow(TCSession session, TCComponentRevisionRule rule)
-	{
-		try{
-			TCComponentBOMWindowType bwType = (TCComponentBOMWindowType)session.getTypeComponent("BOMWindow");
-			return bwType.create(rule);
-		} catch (Exception ex){
-			ex.printStackTrace();
-			return null;
-		}
-	}
+			        public TCComponentBOMWindow createBomWindow(TCSession session, TCComponentRevisionRule rule){
+			                try{
+			                        TCComponentBOMWindowType bwType = (TCComponentBOMWindowType)session.getTypeComponent("BOMWindow");
+			                        return bwType.create(rule);
+		                } catch (Exception ex){
+			                        ex.printStackTrace();
+			                        return null;
+			                }
+			        }
 			        
-	public TCComponentBOMView getBomView(TCComponentItem item, String type)
-	{
-		try{
-			TCComponent[] components = item.getRelatedComponents("bom_view_tags");
-			if(components!=null){
-				return (TCComponentBOMView)components[0];
-			}
-			return null;
-		} catch (Exception ex){
-			ex.printStackTrace();
-			return null;
-		}
-	}
+			        public TCComponentBOMView getBomView(TCComponentItem item, String type){
+			                try{
+			                        TCComponent[] components = item.getRelatedComponents("bom_view_tags");
+			                        if(components!=null){
+			                                return (TCComponentBOMView)components[0];
+			                        }
+			                        return null;
+			                } catch (Exception ex){
+			                        ex.printStackTrace();
+			                        return null;
+			                }
+			        }
 	}
 
 
