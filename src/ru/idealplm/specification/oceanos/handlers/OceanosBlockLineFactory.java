@@ -5,6 +5,7 @@ import com.teamcenter.rac.kernel.TCComponent;
 import com.teamcenter.rac.kernel.TCComponentBOMLine;
 import com.teamcenter.rac.kernel.TCComponentItem;
 import com.teamcenter.rac.kernel.TCComponentItemRevision;
+import com.teamcenter.rac.kernel.TCException;
 
 import ru.idealplm.specification.oceanos.handlers.linehandlers.OceanosBlockLineHandler;
 import ru.idealplm.utils.specification.blockline.BlockLine;
@@ -56,14 +57,9 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 				if(typeOfPart.equals("Сборочная единица") || typeOfPart.equals("Комплекс")){
 					/*********************** Сборки и Комплексы ***********************/
 					AIFComponentContext[] relatedDocs = bomLine.getItemRevision().getRelated("Oc9_DocRel");
-					for(AIFComponentContext relatedDoc : relatedDocs){
-						String docID = relatedDoc.getComponent().getProperty("item_id");
-						if(docID.equals(bomLine.getItem().getProperty("item_id"))){
-							String format = ((TCComponentItem)relatedDoc.getComponent()).getLatestItemRevision().getProperty("oc9_Format");
-							resultBlockLine.attributes.setFormat(format);
-							break;
-						}
-					}
+					String itemID = bomLine.getItem().getProperty("item_id");
+					String format = getFormat(itemID, relatedDocs);
+					resultBlockLine.attributes.setFormat(format);
 					resultBlockLine.attributes.setId(item.getProperty("item_id"));
 					resultBlockLine.attributes.setName(itemIR.getProperty("object_name"));
 					resultBlockLine.attributes.setQuantity(properties[2]);
@@ -81,20 +77,16 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 					/*****************************Детали*********************************/
 					boolean hasDraft = false;
 					AIFComponentContext[] relatedDocs = bomLine.getItemRevision().getRelated("Oc9_DocRel");
-					for(AIFComponentContext relatedDoc : relatedDocs){
-						String docID = relatedDoc.getComponent().getProperty("item_id");
-						if(docID.equals(bomLine.getItem().getProperty("item_id"))){
-							String format = ((TCComponentItem)relatedDoc.getComponent()).getLatestItemRevision().getProperty("oc9_Format");
-							resultBlockLine.attributes.setFormat(format);
-							hasDraft = true;
-							break;
-						}
+					String itemID = bomLine.getItem().getProperty("item_id");
+					String format = getFormat(itemID, relatedDocs);
+					if(!format.equals("БЧ")){
+						hasDraft = true;
 					}
+					resultBlockLine.attributes.setFormat(format);
 					if(!hasDraft){
 						if(itemIR.getProperty("oc9_CADMaterial").equals("")){
 							Specification.errorList.addError(new Error("ERROR", "У БЧ-детали с идентификатором " + item.getProperty("item_id") + " не заполнен атрибут \"Исходный материал\""));
 						}
-						resultBlockLine.attributes.setFormat("БЧ");
 						resultBlockLine.attributes.setName(itemIR.getProperty("object_name") + "\n" + itemIR.getProperty("oc9_CADMaterial") + " " + itemIR.getProperty("oc9_AddNote"));
 					} else {
 						resultBlockLine.attributes.setName(itemIR.getProperty("object_name"));
@@ -119,15 +111,11 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 						blank.attributes.setPosition("-");
 						blank.attributes.setName(blankItem.getLatestItemRevision().getProperty("object_name") + " " + "Изделие-заготовка для " + resultBlockLine.attributes.getId());
 						if(!blankItem.getType().equals("CommercialPart")){
+							String blankItemID = blankItem.getProperty("item_id");
 							relatedDocs = ((TCComponentItem)relatedBlanks[0].getComponent()).getLatestItemRevision().getRelated("Oc9_DocRel");
-							for(AIFComponentContext relatedDoc : relatedDocs){
-								String docID = relatedDoc.getComponent().getProperty("item_id");
-								if(docID.equals(blankItem.getProperty("item_id"))){
-									String format = ((TCComponentItem)relatedDoc.getComponent()).getLatestItemRevision().getProperty("oc9_Format");
-									System.out.println("FORMATFOR:"+format);
-									blank.attributes.setFormat(format);
-									break;
-								}
+							String blankFormat = getFormat(blankItemID, relatedDocs);
+							if(!format.equals("БЧ")){
+								blank.attributes.setFormat(blankFormat);
 							}
 							blank.attributes.setId(relatedBlanks[0].getComponent().getProperty("item_id"));
 						}
@@ -226,6 +214,31 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 			ex.printStackTrace();
 			return null;
 		}
+	}
+	
+	public String getFormat(String itemID, AIFComponentContext[] relatedDocuments){
+		String format = "БЧ";
+		try{
+			for(AIFComponentContext relatedDoc : relatedDocuments){
+				String docID = relatedDoc.getComponent().getProperty("item_id");
+				String docFormat = ((TCComponentItem)relatedDoc.getComponent()).getLatestItemRevision().getProperty("oc9_Format");
+				if(docID.equals(itemID)){
+					format = docFormat;
+					break;
+				} else if(itemID.contains("-")) {
+					if(docID.equals(itemID.substring(0, itemID.lastIndexOf("-")))){
+						format = docFormat;
+					} else if(docID.contains("-")) {
+						if(docID.substring(0, docID.lastIndexOf("-")).equals(itemID.substring(0, itemID.lastIndexOf("-")))){
+							format = docFormat;
+						}
+					}
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return format;
 	}
 
 }

@@ -110,6 +110,9 @@ public class SampleHandler extends AbstractHandler {
 		Specification.settings.setColumnLength(FormField.QUANTITY, 3);
 		Specification.settings.setColumnLength(FormField.REMARK, 88);
 		
+		String[] emptyValues = {};
+		Specification.settings.setNonbreakableWords(Specification.preferenceService.getStringArray(Specification.preferenceService.TC_preference_site, "Oc9_Spec_NonbreakableWords", emptyValues));
+		
 		
 		if(!specification.validate()){
 			System.out.println(specification.getErrorList().toString());
