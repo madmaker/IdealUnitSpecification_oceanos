@@ -59,6 +59,7 @@ public class OceanosAttachMethod implements IAttachMethod{
 			this.dmService = DataManagementService.getService(session);
 			this.specIR = specification.getSpecificationItemRevision();
 			System.out.println("...METHOD...  AttachMethod");
+			TCComponentDataset currentSpecDataset = null;
 			if(reportFile!=null){
 				try{
 					renamedReportFile = new File(Specification.getInstance().getXmlFile().getAbsolutePath().substring(0, Specification.getInstance().getXmlFile().getAbsolutePath().lastIndexOf("_"))+".pdf");
@@ -72,7 +73,7 @@ public class OceanosAttachMethod implements IAttachMethod{
 			}
 			if(specIR != null) {
 				System.out.println("+++++++++++  SPREV!=NULL");
-				deletePrevSpecDatasetOfKd();
+				currentSpecDataset = deletePrevSpecDatasetOfKd();
 			} else if (specIR == null) {
 				System.out.println("+++++++++++  SPREV==NULL");
 				TCComponentItem kdDoc = findKDDocItem();
@@ -91,12 +92,12 @@ public class OceanosAttachMethod implements IAttachMethod{
 						
 						if (specIR != null) {
 							deleteRelationsToCompanyPart(specIR);
-							deletePrevSpecDatasetOfKd();
+							currentSpecDataset = deletePrevSpecDatasetOfKd();
 						}
 					} else {
 						System.out.println("REPLACING LAST REVISION!");
 						specIR = kdDoc.getLatestItemRevision();
-						deletePrevSpecDatasetOfKd();
+						currentSpecDataset = deletePrevSpecDatasetOfKd();
 					}
 				}
 				
@@ -111,40 +112,45 @@ public class OceanosAttachMethod implements IAttachMethod{
 				//spRev.setProperty("pm8_Format", finalFormat(page));
 			}
 	
-			TCComponentDataset ds_new = createDatasetAndAddFile(specification.getReportFile().getAbsolutePath());
-			if (ds_new != null) {
-				System.out.println("Adding to item_id: " + specIR.getProperty("item_id"));
-				TCComponent tempComp;
-				if((tempComp = specIR.getRelatedComponent("Oc9_SignRel"))!=null){
-					System.out.println("+++++FOUND SIGN FORM!!!!");
-					tempComp.setProperty("oc9_Designer", Specification.settings.getStringProperty("Designer"));
-					tempComp.setProperty("oc9_Check", Specification.settings.getStringProperty("Check"));
-					tempComp.setProperty("oc9_TCheck", Specification.settings.getStringProperty("TCheck"));
-					tempComp.setProperty("oc9_NCheck", Specification.settings.getStringProperty("NCheck"));
-					tempComp.setProperty("oc9_Approver", Specification.settings.getStringProperty("Approver"));
+			if(currentSpecDataset==null){
+				TCComponentDataset ds_new = createDatasetAndAddFile(specification.getReportFile().getAbsolutePath());
+				if (ds_new != null) {
+					System.out.println("Adding to item_id: " + specIR.getProperty("item_id"));
+					TCComponent tempComp;
+					if((tempComp = specIR.getRelatedComponent("Oc9_SignRel"))!=null){
+						System.out.println("+++++FOUND SIGN FORM!!!!");
+						tempComp.setProperty("oc9_Designer", Specification.settings.getStringProperty("Designer"));
+						tempComp.setProperty("oc9_Check", Specification.settings.getStringProperty("Check"));
+						tempComp.setProperty("oc9_TCheck", Specification.settings.getStringProperty("TCheck"));
+						tempComp.setProperty("oc9_NCheck", Specification.settings.getStringProperty("NCheck"));
+						tempComp.setProperty("oc9_Approver", Specification.settings.getStringProperty("Approver"));
+						
+						tempComp.setProperty("oc9_DesignDate", Specification.settings.getStringProperty("DesignerDate"));
+						tempComp.setProperty("oc9_CheckDate", Specification.settings.getStringProperty("CheckDate"));
+						tempComp.setProperty("oc9_TCheckDate", Specification.settings.getStringProperty("TCheckDate"));
+						tempComp.setProperty("oc9_NCheckDate", Specification.settings.getStringProperty("NCheckDate"));
+						tempComp.setProperty("oc9_ApproveDate", Specification.settings.getStringProperty("ApproverDate"));
+					}
+					if(specIR.getRelatedComponent("IMAN_master_form_rev")!=null){
+						specIR.getRelatedComponent("IMAN_master_form_rev").setProperty("object_desc", Specification.settings.getStringProperty("blockSettings"));
+						/*Specification.settings.addStringProperty("blockSettings", specIR.getRelatedComponent("IMAN_master_form_rev").getProperty("object_desc"));*/
+					}
+					specIR.add("IMAN_specification", ds_new);
+					specIR.lock();
+					topBOMLine.getItemRevision().setProperty("oc9_AddNote", Specification.settings.getStringProperty("AddedText"));
+					//topBOMLine.getItemRevision().setProperty("oc9_AddNote", Specification.settings.getStringProperty("blockSettings"));
+					specIR.setProperty("oc9_Litera1", Specification.settings.getStringProperty("LITERA1"));
+					specIR.setProperty("oc9_Litera2", Specification.settings.getStringProperty("LITERA2"));
+					specIR.setProperty("oc9_Litera3", Specification.settings.getStringProperty("LITERA3"));
+					//specIR.getItem().setProperty("oc9_PrimaryApp", Specification.settings.getStringProperty("PERVPRIM"));
+					specIR.save();
+					specIR.unlock();
 					
-					tempComp.setProperty("oc9_DesignDate", Specification.settings.getStringProperty("DesignerDate"));
-					tempComp.setProperty("oc9_CheckDate", Specification.settings.getStringProperty("CheckDate"));
-					tempComp.setProperty("oc9_TCheckDate", Specification.settings.getStringProperty("TCheckDate"));
-					tempComp.setProperty("oc9_NCheckDate", Specification.settings.getStringProperty("NCheckDate"));
-					tempComp.setProperty("oc9_ApproveDate", Specification.settings.getStringProperty("ApproverDate"));
+					Desktop.getDesktop().open(ds_new.getFiles("")[0]);
 				}
-				if(specIR.getRelatedComponent("IMAN_master_form_rev")!=null){
-					specIR.getRelatedComponent("IMAN_master_form_rev").setProperty("object_desc", Specification.settings.getStringProperty("blockSettings"));
-					/*Specification.settings.addStringProperty("blockSettings", specIR.getRelatedComponent("IMAN_master_form_rev").getProperty("object_desc"));*/
-				}
-				specIR.add("IMAN_specification", ds_new);
-				specIR.lock();
-				topBOMLine.getItemRevision().setProperty("oc9_AddNote", Specification.settings.getStringProperty("AddedText"));
-				//topBOMLine.getItemRevision().setProperty("oc9_AddNote", Specification.settings.getStringProperty("blockSettings"));
-				specIR.setProperty("oc9_Litera1", Specification.settings.getStringProperty("LITERA1"));
-				specIR.setProperty("oc9_Litera2", Specification.settings.getStringProperty("LITERA2"));
-				specIR.setProperty("oc9_Litera3", Specification.settings.getStringProperty("LITERA3"));
-				//specIR.getItem().setProperty("oc9_PrimaryApp", Specification.settings.getStringProperty("PERVPRIM"));
-				specIR.save();
-				specIR.unlock();
-				
-				Desktop.getDesktop().open(ds_new.getFiles("")[0]);
+			} else {
+				String dataset_tool = "PDF_Reference";
+				currentSpecDataset.setFiles(new String[] { renamedReportFile!=null?renamedReportFile.getAbsolutePath():reportFile.getAbsolutePath() }, new String[] { dataset_tool });
 			}
 		} catch (Exception ex){
 			ex.printStackTrace();
@@ -265,22 +271,28 @@ public class OceanosAttachMethod implements IAttachMethod{
 		return ret;
 	}
 	
-	private void deletePrevSpecDatasetOfKd() throws Exception {
-		
+	private TCComponentDataset deletePrevSpecDatasetOfKd() throws Exception {
+		TCComponentDataset dataset = null;
 		for (AIFComponentContext compContext : specIR.getChildren()){
 			System.out.println(">>> TYPE: " + compContext.getComponent().getProperty("object_type"));
 			if ((compContext.getComponent() instanceof TCComponentDataset) 
 					&& compContext.getComponent().getProperty("object_desc").equals("Спецификация")) {
-				System.out.println("Deleting Spec Dataset in KD");
-				System.out.println("Deleting Spec Dataset in KD");
-				((TCComponent) compContext.getComponent()).removeAndDestroy("IMAN_specification", specIR);
+				dataset = (TCComponentDataset)compContext.getComponent();
+				//System.out.println("Deleting Spec Dataset in KD");
+				System.out.println("Deleting Spec Dataset Named Ref in KD");
+				TCComponent[] namedRefs = ((TCComponentDataset) compContext.getComponent()).getNamedReferences();
+				for(TCComponent namedRef : namedRefs){
+					dataset.removeNamedReference(namedRef.getProperty("original_file_name"));
+					namedRef.delete();
+				}
 				System.out.println("after destroying");
-				specIR.lock();
+				/*specIR.lock();
 				specIR.save();
-				specIR.unlock();
+				specIR.unlock();*/
 			}
 
 		}
+		return dataset;
 	}
 	
 	private TCComponentItemRevision getLastRevOfItem(TCComponentItem item) throws TCException {
