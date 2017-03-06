@@ -151,6 +151,7 @@ public class OceanosAttachMethod implements IAttachMethod{
 			} else {
 				String dataset_tool = "PDF_Reference";
 				currentSpecDataset.setFiles(new String[] { renamedReportFile!=null?renamedReportFile.getAbsolutePath():reportFile.getAbsolutePath() }, new String[] { dataset_tool });
+				Desktop.getDesktop().open(currentSpecDataset.getFiles("")[0]);
 			}
 		} catch (Exception ex){
 			ex.printStackTrace();
@@ -278,17 +279,9 @@ public class OceanosAttachMethod implements IAttachMethod{
 			if ((compContext.getComponent() instanceof TCComponentDataset) 
 					&& compContext.getComponent().getProperty("object_desc").equals("Спецификация")) {
 				dataset = (TCComponentDataset)compContext.getComponent();
-				//System.out.println("Deleting Spec Dataset in KD");
 				System.out.println("Deleting Spec Dataset Named Ref in KD");
-				TCComponent[] namedRefs = ((TCComponentDataset) compContext.getComponent()).getNamedReferences();
-				for(TCComponent namedRef : namedRefs){
-					dataset.removeNamedReference(namedRef.getProperty("original_file_name"));
-					namedRef.delete();
-				}
+				dataset.removeFiles("ImanFile");
 				System.out.println("after destroying");
-				/*specIR.lock();
-				specIR.save();
-				specIR.unlock();*/
 			}
 
 		}

@@ -195,6 +195,9 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 					String uom = ((TCComponentBOMLine) materialBOMLines[0].getComponent()).getProperty("bl_item_uom_tag");
 					uom = uom.equals("*")?"":uom;
 					resultBlockLine.attributes.setName(materialIR.getItem().getProperty("oc9_RightName"));
+					if(materialIR.getItem().getProperty("oc9_RightName").equals("Наименование не согласовано")){
+						resultBlockLine.addProperty("bNameNotApproved", "true");
+					}
 					resultBlockLine.attributes.setQuantity(String.valueOf(quantityMD*quantotyGD));
 					resultBlockLine.attributes.setRemark(uom);
 					resultBlockLine.addRefBOMLine(bomLine);

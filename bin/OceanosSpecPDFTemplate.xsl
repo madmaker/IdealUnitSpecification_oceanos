@@ -834,36 +834,10 @@
     <xsl:param name="Height"/>
     <xsl:param name="Width"/>
     <xsl:param name="Text"/>
-
-    <xsl:variable name="mm">mm</xsl:variable>
-    <xsl:variable name="text_length"> <xsl:value-of select="string-length($Text)"/></xsl:variable>
-    <xsl:variable name="h"> <xsl:value-of select="substring($Height,0,string-length($Height)-1)"/></xsl:variable>
-    <xsl:variable name="w"><xsl:value-of select="substring($Width,0,string-length($Width)-1)"/></xsl:variable>
-    <xsl:variable name="lh">
-        <xsl:choose>
-          <xsl:when test="not(contains($Text, ' '))">
-              <xsl:value-of select="$w div (0.8 * $text_length)"/>
-          </xsl:when>
-          <xsl:otherwise>
-              <xsl:call-template name="sqrt"><xsl:with-param name="number" select="($w * $h) div (1.15 * $text_length)"/></xsl:call-template>
-          </xsl:otherwise>
-        </xsl:choose>
-    </xsl:variable>
-    <xsl:variable name="hh"><xsl:value-of select="(1.3 * $lh)"/></xsl:variable>
-    <xsl:variable name="lh_norm">
-        <xsl:choose>
-          <xsl:when test="$lh &gt; 6">
-              <xsl:value-of select="6"/>
-          </xsl:when>
-          <xsl:otherwise>
-              <xsl:value-of select="$lh"/>
-          </xsl:otherwise>
-        </xsl:choose>
-    </xsl:variable>
-
-        <fo:block-container height="{$Height}" line-height="{$hh}{$mm}" display-align="center">
-                  <fo:block text-align="center" font-size="{$lh_norm}{$mm}"><xsl:value-of select="$Text"/></fo:block>
-         </fo:block-container>
+	
+	<fo:block-container height="{$Height}" display-align="center">
+		<fo:block text-align="center" font-size="6mm"><xsl:value-of select="$Text"/></fo:block>
+	</fo:block-container>
 </xsl:template>
 
 

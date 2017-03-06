@@ -217,7 +217,7 @@ public class MainSpecificationDialog extends Dialog {
 		Composite compositeDesigner = new Composite(compositeSignatures, SWT.EMBEDDED);
 		compositeDesigner.setBounds(260, 44, 150, 23);
 		java.awt.Frame frameDesigner = SWT_AWT.new_Frame(compositeDesigner);
-	    java.awt.Panel panelDesigner = new java.awt.Panel(new java.awt.BorderLayout());
+		java.awt.Panel panelDesigner = new java.awt.Panel(new java.awt.BorderLayout());
 	    frameDesigner.add(panelDesigner);
 		dateDesigner = new DateButton();
 		dateDesigner.setDoubleBuffered(true);
