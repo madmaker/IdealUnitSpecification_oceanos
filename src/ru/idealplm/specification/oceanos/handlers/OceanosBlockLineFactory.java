@@ -1,5 +1,7 @@
 package ru.idealplm.specification.oceanos.handlers;
 
+import java.math.BigDecimal;
+
 import com.teamcenter.rac.aif.kernel.AIFComponentContext;
 import com.teamcenter.rac.kernel.TCComponent;
 import com.teamcenter.rac.kernel.TCComponentBOMLine;
@@ -190,15 +192,15 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 					}
 					TCComponentItemRevision materialIR = ((TCComponentBOMLine) materialBOMLines[0].getComponent()).getItemRevision();
 					String quantityMS = ((TCComponentBOMLine) materialBOMLines[0].getComponent()).getProperty("bl_quantity");
-					float quantityMD = Float.parseFloat(quantityMS.equals("")?"1":quantityMS);
-					int quantotyGD = Integer.parseInt(properties[2].equals("")?"1":properties[2]);
+					BigDecimal quantityMD = new BigDecimal(quantityMS.equals("")?"1":quantityMS);
+					BigDecimal quantotyGD = new BigDecimal(properties[2].equals("")?"1":properties[2]);
 					String uom = ((TCComponentBOMLine) materialBOMLines[0].getComponent()).getProperty("bl_item_uom_tag");
 					uom = uom.equals("*")?"":uom;
 					resultBlockLine.attributes.setName(materialIR.getItem().getProperty("oc9_RightName"));
 					if(materialIR.getItem().getProperty("oc9_RightName").equals("Наименование не согласовано")){
 						resultBlockLine.addProperty("bNameNotApproved", "true");
 					}
-					resultBlockLine.attributes.setQuantity(String.valueOf(quantityMD*quantotyGD));
+					resultBlockLine.attributes.setQuantity(quantityMD.multiply(quantotyGD).toString());
 					resultBlockLine.attributes.setRemark(uom);
 					resultBlockLine.addRefBOMLine(bomLine);
 					resultBlockLine.addProperty("SE Cut Length", "");

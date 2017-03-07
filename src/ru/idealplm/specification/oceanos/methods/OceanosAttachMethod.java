@@ -146,11 +146,13 @@ public class OceanosAttachMethod implements IAttachMethod{
 					specIR.save();
 					specIR.unlock();
 					
+					ds_new.getFiles("")[0].setReadOnly();
 					Desktop.getDesktop().open(ds_new.getFiles("")[0]);
 				}
 			} else {
 				String dataset_tool = "PDF_Reference";
 				currentSpecDataset.setFiles(new String[] { renamedReportFile!=null?renamedReportFile.getAbsolutePath():reportFile.getAbsolutePath() }, new String[] { dataset_tool });
+				currentSpecDataset.getFiles("")[0].setReadOnly();
 				Desktop.getDesktop().open(currentSpecDataset.getFiles("")[0]);
 			}
 		} catch (Exception ex){
