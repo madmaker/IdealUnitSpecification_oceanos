@@ -158,7 +158,7 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 										try{
 											chbl.setProperty("bl_sequence_no", bl.attributes.getPosition());
 										}catch(Exception ex){
-											ex.printStackTrace();
+											System.out.println("Impossible to set position: " + bl.attributes.getPosition());
 										}
 									}
 								}
@@ -169,7 +169,7 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 										try{
 											chbl.setProperty("bl_sequence_no", /*currentPos*/bl.attributes.getPosition());
 										}catch(Exception ex){
-											ex.printStackTrace();
+											System.out.println("Impossible to set position: " + bl.attributes.getPosition());
 										}
 									}
 								}

@@ -105,10 +105,8 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 								if(storedLine.getProperty("FromMat").isEmpty()){
 									storedLine.addProperty("FromMat", line.getProperty("FromMat"));
 								}
-								System.out.println("ALREADY GOT ONE ^" + line.attributes.getId());
 								if(line.getProperty("SE Cut Length").isEmpty() && storedLine.getProperty("SE Cut Length").isEmpty()){
 									// If both are null, then we just update stored line attributes with current line attributes
-									System.out.println("BOTH NULL");
 									storedLine.attributes.createKits();
 									storedLine.attributes.addKit(line.attributes.getKits());
 									storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
@@ -116,13 +114,11 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 								} else if(!line.getProperty("SE Cut Length").isEmpty() && !storedLine.getProperty("SE Cut Length").isEmpty()) {
 									// If both have different SE Cut Length attribute values then we attach current line to stored one
 									// Later it will be detached and added directly to block
-									System.out.println("BOTH NOT NULL");
 									storedLine.getAttachedLines().add(line);
 								} else {
 									// If one is empty and other one is not, then we have an error
 									// It is not allowed for the same material to have 2 occurences,
 									// where one of them does have SE Cut Length attribute and the other one doesn't
-									System.out.println("BOTH DIFFERENT");
 									specification.getErrorList().addError(new Error("ERROR", "Отсутствует значение атрибута SE Cut Length для материала с именем "+line.attributes.getStringValueFromField(FormField.ID)));
 								}
 						} else {
