@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+
 import com.teamcenter.rac.aif.kernel.AIFComponentContext;
 import com.teamcenter.rac.kernel.TCComponent;
 import com.teamcenter.rac.kernel.TCComponentBOMLine;
@@ -112,9 +114,12 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 									storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
 									storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
 								} else if(!line.getProperty("SE Cut Length").isEmpty() && !storedLine.getProperty("SE Cut Length").isEmpty()) {
-									// If both have different SE Cut Length attribute values then we attach current line to stored one
-									// Later it will be detached and added directly to block
-									storedLine.getAttachedLines().add(line);
+									// If both have different not null SE Cut Length attribute values 
+									// then we just update stored line attributes with current line attributes
+									storedLine.attributes.createKits();
+									storedLine.attributes.addKit(line.attributes.getKits());
+									storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
+									storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
 								} else {
 									// If one is empty and other one is not, then we have an error
 									// It is not allowed for the same material to have 2 occurences,
@@ -128,7 +133,6 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 					} else {
 						blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid, line);
 					}
-					
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -238,7 +242,6 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 			Specification.settings.addBooleanProperty("canRenumerize", !atLeastOnePosIsFixed);
 			Specification.settings.addBooleanProperty("canUseReservePos", atLeastOnePosIsFixed && hasPrevRev);
 			Specification.settings.addBooleanProperty("canReadLastRevPos", !atLeastOnePosIsFixed && hasPrevRev);
-			
 		} catch (Exception ex){
 			ex.printStackTrace();
 		}

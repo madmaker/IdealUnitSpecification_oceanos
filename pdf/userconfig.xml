@@ -7,19 +7,16 @@
     <renderers>
         <renderer mime="application/pdf">
             <fonts>
-                <!--font kerning="yes" embed-url="file:///c:/windows/fonts/calibri.ttf">
-                    <font-triplet name="arial" style="normal" weight="normal"/>
-                </font-->
-                <font kerning="yes" embed-url="file:///c:/windows/fonts/gost.ttf">
+                <font kerning="yes" embed-url="file:///c:/windows/fonts/calibri.ttf">
                     <font-triplet name="arial" style="normal" weight="normal"/>
                 </font>
-                <font kerning="yes" embed-url="file:///c:/windows/fonts/gost_a_italic.ttf">
+                <font kerning="yes" embed-url="file:///c:/windows/fonts/calibrii.ttf">
                     <font-triplet name="arial" style="italic" weight="normal"/>
                 </font>
-                <font kerning="yes" embed-url="file:///c:/windows/fonts/gost_a_Bold.ttf">
+                <font kerning="yes" embed-url="file:///c:/windows/fonts/calibrib.ttf">
                     <font-triplet name="arial" style="normal" weight="bold"/>
                 </font>	
-                <font kerning="yes" embed-url="file:///c:/windows/fonts/gost_a_Bold_italic.ttf">
+                <font kerning="yes" embed-url="file:///c:/windows/fonts/calibriz.ttf">
                     <font-triplet name="arial" style="italic" weight="bold"/>
                 </font>	              
             </fonts>

@@ -115,7 +115,7 @@ public class SampleHandler extends AbstractHandler {
 				// TODO Need to make it start async right when SP button is pressed
 				// ReportBuilder reportBuilder = new PDFBuilder(Specification.getDefaultSpecificationPDFTemplate(), Specification.getDefaultSpecificationPDFConfig());
 				PerfTrack.prepare("readBOMData");
-				ProgressMonitorDialog pd = new ProgressMonitorDialog(HandlerUtil.getActiveShell(event).getShell());
+				final ProgressMonitorDialog pd = new ProgressMonitorDialog(HandlerUtil.getActiveShell(event).getShell());
 				try {
 					pd.run(true /*fork*/, true /*cancelable*/, new IRunnableWithProgress() {
 					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
