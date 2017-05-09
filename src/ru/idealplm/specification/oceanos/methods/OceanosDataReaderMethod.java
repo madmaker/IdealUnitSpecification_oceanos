@@ -1,5 +1,6 @@
 package ru.idealplm.specification.oceanos.methods;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,11 +9,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import com.teamcenter.rac.aif.kernel.AIFComponentContext;
 import com.teamcenter.rac.kernel.TCComponent;
@@ -21,6 +25,12 @@ import com.teamcenter.rac.kernel.TCComponentDataset;
 import com.teamcenter.rac.kernel.TCComponentItem;
 import com.teamcenter.rac.kernel.TCComponentItemRevision;
 import com.teamcenter.rac.kernel.TCException;
+import com.teamcenter.services.rac.cad.StructureManagementService;
+import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSData;
+import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSOneLevelInfo;
+import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSOneLevelOutput;
+import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSOneLevelPref;
+import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSOneLevelResponse;
 
 import ru.idealplm.specification.oceanos.handlers.OceanosBlockLineFactory;
 import ru.idealplm.specification.oceanos.handlers.linehandlers.OceanosBlockLineHandler;
@@ -35,11 +45,12 @@ import ru.idealplm.utils.specification.Specification.FormField;
 import ru.idealplm.utils.specification.methods.IDataReaderMethod;
 import ru.idealplm.utils.specification.util.GeneralUtils;
 
-public class OceanosDataReaderMethod implements IDataReaderMethod{
-	
+public class OceanosDataReaderMethod implements IDataReaderMethod
+{	
+	public ProgressMonitorDialog pd;
 	private Specification specification = Specification.getInstance();
+	private StructureManagementService smsService = StructureManagementService.getService(specification.session);
 	private BlockList blockList;
-	private BlockingQueue<AIFComponentContext> bomQueue;
 	private ArrayList<String> bl_sequence_noList;
 	private HashMap<String, Boolean> oc9_IsFromEAsmList;
 	private HashMap<String, Boolean> oc9_DisableChangeFindNoList;
@@ -50,6 +61,8 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 	private HashMap<String, BlockLine> materialUIDs;
 	private HashMap<String, BlockLine> uids;
 	private HashMap<String, BlockLine> uidsSubstitute;
+	private OceanosBlockLineFactory blFactory;
+	private TCComponentBOMLine topBOMLine;
 	
 	public OceanosDataReaderMethod() {
 		bl_sequence_noList = new ArrayList<String>();
@@ -62,85 +75,104 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 		materialUIDs = new HashMap<String, BlockLine>();
 		uids = new HashMap<String, BlockLine>();
 		uidsSubstitute = new HashMap<String, BlockLine>();
+		blFactory = new OceanosBlockLineFactory();
 	}
 	
 	boolean atLeastOnePosIsFixed = false;
 	boolean atLeastOneME = false;
 	boolean hasPrevRev = false;
 	
-	private class OceanosBOMLineProcessor{
-
-		public OceanosBOMLineProcessor() {
+	private void parseBOMLineData(TCComponentBOMLine bomLine)
+	{
+		try
+		{
+			BlockLine line = blFactory.newBlockLine(bomLine);
+			line.isSubstitute = false;
+			uids.put(line.uid, line);
+			for(TCComponentBOMLine comp : bomLine.listSubstitutes())
+			{
+				BlockLine substituteLine = blFactory.newBlockLine(comp);
+				substituteLine.attributes.setPosition(line.attributes.getPosition()+"*");
+				substituteLine.attributes.setQuantity("-1");
+				substituteLine.isSubstitute = true;
+				line.addSubstituteBlockLine(substituteLine);
+				uidsSubstitute.put(substituteLine.uid, substituteLine);
+			}
+			if(line.blockType == BlockType.ME) atLeastOneME = true;
+			if(!line.isRenumerizable) {
+				atLeastOnePosIsFixed = true;
+				System.out.println("NOTRENUM:"+line.attributes.getId());
+			}
+			validateBOMLineAttributess(line);
 			
-		}
-		
-		public void run() {
-			TCComponentBOMLine bomLine;
-			OceanosBlockLineFactory blFactory = new OceanosBlockLineFactory();
-			while(!bomQueue.isEmpty()){
-				try {
-					bomLine = (TCComponentBOMLine) bomQueue.take().getComponent();
-					BlockLine line = blFactory.newBlockLine(bomLine);
-					line.isSubstitute = false;
-					uids.put(line.uid, line);
-					for(TCComponentBOMLine comp : bomLine.listSubstitutes()){
-						BlockLine substituteLine = blFactory.newBlockLine(comp);
-						substituteLine.attributes.setPosition(line.attributes.getPosition()+"*");
-						substituteLine.attributes.setQuantity("-1");
-						substituteLine.isSubstitute = true;
-						line.addSubstituteBlockLine(substituteLine);
-						uidsSubstitute.put(substituteLine.uid, substituteLine);
-					}
-					if(line.blockType == BlockType.ME) atLeastOneME = true;
-					if(!line.isRenumerizable) {
-						atLeastOnePosIsFixed = true;
-						System.out.println("NOTRENUM:"+line.attributes.getId());
-					}
-					validateBOMLineAttributess(line);
-					
-					if(line.blockContentType == BlockContentType.MATERIALS){
-						if(materialUIDs.containsKey(line.uid+line.getProperty("SE Cut Length"))){
-								BlockLine storedLine = materialUIDs.get(line.uid+line.getProperty("SE Cut Length"));
-								if(storedLine.getProperty("FromGeomMat").isEmpty()){
-									storedLine.addProperty("FromGeomMat", line.getProperty("FromGeomMat"));
-								}
-								if(storedLine.getProperty("FromMat").isEmpty()){
-									storedLine.addProperty("FromMat", line.getProperty("FromMat"));
-								}
-								if(line.getProperty("SE Cut Length").isEmpty() && storedLine.getProperty("SE Cut Length").isEmpty()){
-									// If both are null, then we just update stored line attributes with current line attributes
-									storedLine.attributes.createKits();
-									storedLine.attributes.addKit(line.attributes.getKits());
-									storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
-									storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
-								} else if(!line.getProperty("SE Cut Length").isEmpty() && !storedLine.getProperty("SE Cut Length").isEmpty()) {
-									// If both have different not null SE Cut Length attribute values 
-									// then we just update stored line attributes with current line attributes
-									storedLine.attributes.createKits();
-									storedLine.attributes.addKit(line.attributes.getKits());
-									storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
-									storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
-								} else {
-									// If one is empty and other one is not, then we have an error
-									// It is not allowed for the same material to have 2 occurences,
-									// where one of them does have SE Cut Length attribute and the other one doesn't
-									specification.getErrorList().addError(new Error("ERROR", "Отсутствует значение атрибута SE Cut Length для материала с именем "+line.attributes.getStringValueFromField(FormField.ID)));
-								}
-						} else {
-							materialUIDs.put(line.uid+line.getProperty("SE Cut Length"), line);
-							blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid+line.getProperty("SE Cut Length"), line);
+			if(line.blockContentType == BlockContentType.MATERIALS){
+				if(materialUIDs.containsKey(line.uid+line.getProperty("SE Cut Length"))){
+						BlockLine storedLine = materialUIDs.get(line.uid+line.getProperty("SE Cut Length"));
+						if(storedLine.getProperty("FromGeomMat").isEmpty()){
+							storedLine.addProperty("FromGeomMat", line.getProperty("FromGeomMat"));
 						}
-					} else {
-						blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid, line);
-					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
+						if(storedLine.getProperty("FromMat").isEmpty()){
+							storedLine.addProperty("FromMat", line.getProperty("FromMat"));
+						}
+						if(line.getProperty("SE Cut Length").isEmpty() && storedLine.getProperty("SE Cut Length").isEmpty()){
+							// If both are null, then we just update stored line attributes with current line attributes
+							storedLine.attributes.createKits();
+							storedLine.attributes.addKit(line.attributes.getKits());
+							storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
+							storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
+						} else if(!line.getProperty("SE Cut Length").isEmpty() && !storedLine.getProperty("SE Cut Length").isEmpty()) {
+							// If both have different not null SE Cut Length attribute values 
+							// then we just update stored line attributes with current line attributes
+							storedLine.attributes.createKits();
+							storedLine.attributes.addKit(line.attributes.getKits());
+							storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
+							storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
+						} else {
+							// If one is empty and other one is not, then we have an error
+							// It is not allowed for the same material to have 2 occurences,
+							// where one of them does have SE Cut Length attribute and the other one doesn't
+							specification.getErrorList().addError(new Error("ERROR", "Отсутствует значение атрибута SE Cut Length для материала с именем "+line.attributes.getStringValueFromField(FormField.ID)));
+						}
+				} else {
+					materialUIDs.put(line.uid+line.getProperty("SE Cut Length"), line);
+					blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid+line.getProperty("SE Cut Length"), line);
+				}
+			} else {
+				blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid, line);
+			}
+		} catch (TCException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void readBOMData(IProgressMonitor monitor)
+	{
+		ExpandPSOneLevelInfo levelInfo = new ExpandPSOneLevelInfo();
+		ExpandPSOneLevelPref levelPref = new ExpandPSOneLevelPref();
+
+		levelInfo.parentBomLines = new TCComponentBOMLine[] { specification.getTopBOMLine() };
+		levelInfo.excludeFilter = "None";
+		levelPref.expItemRev = true;
+
+		ExpandPSOneLevelResponse levelResp = smsService.expandPSOneLevel(levelInfo, levelPref);
+
+		if (levelResp.output.length > 0)
+		{
+			monitor.beginTask("Чтение данных структуры сборки", levelResp.output.length);
+			for (ExpandPSOneLevelOutput levelOut : levelResp.output)
+			{
+				for (ExpandPSData psData : levelOut.children)
+				{
+					parseBOMLineData(psData.bomLine);
+				}
+				monitor.worked(1);
+				if(monitor.isCanceled())
+				{
+					throw new CancellationException("Чтение данных структуры сборки было отменено");
 				}
 			}
+			monitor.done();
 		}
-		
 	}
 
 	@Override
@@ -150,7 +182,6 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 			blockList = specification.getBlockList();
 			
 			PerfTrack.prepare("Getting BOM");
-			TCComponentBOMLine topBOMLine = specification.getTopBOMLine();
 			
 			TCComponentItem topItem = topBOMLine.getItem();
 			TCComponentItemRevision topItemR = topBOMLine.getItemRevision();
@@ -162,47 +193,21 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 				}
 			}
 			
-			AIFComponentContext[] childBOMLines = topBOMLine.getChildren();
-			
-			for (AIFComponentContext currBOMLine : childBOMLines) {
-				TCComponentBOMLine bl = (TCComponentBOMLine) currBOMLine.getComponent();
-				if (bl.isPacked()) {
-					bl.unpack();
-					bl.refresh();
-				}
-			}
-			topBOMLine.refresh();
-			
-			childBOMLines = topBOMLine.getChildren();
-		
-			readSpecifiedItemData(topBOMLine);
-			readTopIRDocuments(topBOMLine);
-			readGeneralNoteForm();
-
-			if(childBOMLines.length>0){
-				bomQueue = new ArrayBlockingQueue<AIFComponentContext>(childBOMLines.length);
-				bomQueue.addAll(Arrays.asList(childBOMLines));
-				PerfTrack.addToLog("Getting BOM");
-				/*ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-				for(int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-					service.submit(new MVMBOMLineProcessor(i));
-				}
-				
-				service.shutdown();
-				service.awaitTermination(3, TimeUnit.MINUTES);
-				while(!service.isTerminated()){
-					Thread.sleep(100);
-				}*/
-				OceanosBOMLineProcessor bomLineProcessor = new OceanosBOMLineProcessor();
-				bomLineProcessor.run();
-			}
-			
-			for (AIFComponentContext currBOMLineContext : childBOMLines){
-				if(!((TCComponentBOMLine) currBOMLineContext.getComponent()).getItem().getType().equals("Oc9_Material")){
-					((TCComponentBOMLine) currBOMLineContext.getComponent()).pack();
-				} else if(((TCComponentBOMLine) currBOMLineContext.getComponent()).getProperty("SE Cut Length").isEmpty()){
-					((TCComponentBOMLine) currBOMLineContext.getComponent()).pack();
-				}
+			try {
+				pd.run(true, true, new IRunnableWithProgress() {
+					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+						monitor.beginTask("Чтение данных", 100);
+						readSpecifiedItemData(topBOMLine);
+						readTopIRDocuments(topBOMLine);
+						readGeneralNoteForm();
+						readBOMData(monitor);
+						monitor.done();
+					}
+				});
+			} catch (InvocationTargetException | InterruptedException e) {
+				e.printStackTrace();
+			} catch (CancellationException ex) {
+				System.out.println(ex.getMessage());
 			}
 			
 			BlockList tempList = new BlockList();
