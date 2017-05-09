@@ -26,11 +26,13 @@ import com.teamcenter.rac.kernel.TCComponentItem;
 import com.teamcenter.rac.kernel.TCComponentItemRevision;
 import com.teamcenter.rac.kernel.TCException;
 import com.teamcenter.services.rac.cad.StructureManagementService;
+import com.teamcenter.services.rac.cad._2007_01.StructureManagement.CreateBOMWindowsInfo;
 import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSData;
 import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSOneLevelInfo;
 import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSOneLevelOutput;
 import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSOneLevelPref;
 import com.teamcenter.services.rac.cad._2007_01.StructureManagement.ExpandPSOneLevelResponse;
+import com.teamcenter.services.rac.cad._2007_01.StructureManagement.RelationAndTypesFilter;
 
 import ru.idealplm.specification.oceanos.handlers.OceanosBlockLineFactory;
 import ru.idealplm.specification.oceanos.handlers.linehandlers.OceanosBlockLineHandler;
@@ -63,6 +65,7 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 	private HashMap<String, BlockLine> uidsSubstitute;
 	private OceanosBlockLineFactory blFactory;
 	private TCComponentBOMLine topBOMLine;
+	private TCComponentBOMLine bomLine;
 	
 	public OceanosDataReaderMethod() {
 		bl_sequence_noList = new ArrayList<String>();
@@ -150,9 +153,10 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 		ExpandPSOneLevelInfo levelInfo = new ExpandPSOneLevelInfo();
 		ExpandPSOneLevelPref levelPref = new ExpandPSOneLevelPref();
 
-		levelInfo.parentBomLines = new TCComponentBOMLine[] { specification.getTopBOMLine() };
+		levelInfo.parentBomLines = new TCComponentBOMLine[] { bomLine };
 		levelInfo.excludeFilter = "None";
 		levelPref.expItemRev = true;
+		levelPref.info = new RelationAndTypesFilter[0];
 
 		ExpandPSOneLevelResponse levelResp = smsService.expandPSOneLevel(levelInfo, levelPref);
 
@@ -164,11 +168,11 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 				for (ExpandPSData psData : levelOut.children)
 				{
 					parseBOMLineData(psData.bomLine);
-				}
-				monitor.worked(1);
-				if(monitor.isCanceled())
-				{
-					throw new CancellationException("Чтение данных структуры сборки было отменено");
+					monitor.worked(1);
+					if(monitor.isCanceled())
+					{
+						throw new CancellationException("Чтение данных структуры сборки было отменено");
+					}
 				}
 			}
 			monitor.done();
@@ -180,6 +184,7 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 		try{
 			loadDocumentTypes();
 			blockList = specification.getBlockList();
+			topBOMLine = specification.getTopBOMLine();
 			
 			PerfTrack.prepare("Getting BOM");
 			
@@ -193,12 +198,25 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 				}
 			}
 			
+			CreateBOMWindowsInfo bomWinInfo = new CreateBOMWindowsInfo();
+										
+			bomWinInfo.item = topItem;
+			bomWinInfo.itemRev = topItemR;
+			bomWinInfo.bomView = topBOMLine.getBOMView();
+									       
+			StructureManagementService.CreateBOMWindowsResponse bomResp = smsService.createBOMWindows(new CreateBOMWindowsInfo[] { bomWinInfo });
+			
+			if(bomResp.output.length > 0)
+			{
+				bomLine = bomResp.output[0].bomLine;
+			}
+			
 			try {
 				pd.run(true, true, new IRunnableWithProgress() {
 					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 						monitor.beginTask("Чтение данных", 100);
-						readSpecifiedItemData(topBOMLine);
-						readTopIRDocuments(topBOMLine);
+						readSpecifiedItemData(bomLine);
+						readTopIRDocuments(bomLine);
 						readGeneralNoteForm();
 						readBOMData(monitor);
 						monitor.done();
