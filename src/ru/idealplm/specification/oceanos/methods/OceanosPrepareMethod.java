@@ -125,6 +125,7 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 						if(!bl.isSubstitute){
 							for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
 								try{
+									System.out.println("Current no = " + chbl.getSequenceNumber());
 									chbl.setProperty("bl_sequence_no", "");
 								}catch(Exception ex){
 									ex.printStackTrace();
@@ -155,6 +156,7 @@ public class OceanosPrepareMethod implements IPrepareMethod{
 									}
 									bl.attributes.setPosition(currentPos);
 									for(TCComponentBOMLine chbl:bl.getRefBOMLines()){
+										System.out.println("SETTING bl sequence no " + bl.attributes.getPosition() + " for " + bl.attributes.getStringValueFromField(FormField.NAME));
 										try{
 											chbl.setProperty("bl_sequence_no", bl.attributes.getPosition());
 										}catch(Exception ex){

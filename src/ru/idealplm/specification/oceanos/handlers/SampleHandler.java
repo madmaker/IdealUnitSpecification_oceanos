@@ -59,6 +59,7 @@ public class SampleHandler extends AbstractHandler {
 	@SuppressWarnings("restriction")
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		
+		ProgressMonitorDialog pd = new ProgressMonitorDialog(HandlerUtil.getActiveShell(event).getShell());
 		final TCComponentBOMLine topBomLine = Activator.getPSEService().getTopBOMLine();
 		final Specification specification = Specification.getInstance();
 		Specification.settings.setTemplateStream(SampleHandler.class.getResourceAsStream("/pdf/OceanosSpecPDFTemplate.xsl"));
@@ -69,6 +70,7 @@ public class SampleHandler extends AbstractHandler {
 		OceanosXmlBuilderMethod oceanosXmlBuilderMethod = new OceanosXmlBuilderMethod();
 		OceanosValidateMethod oceanosValidateMethod = new OceanosValidateMethod();
 		OceanosReportBuilderMethod oceanosReportBuilderMethod = new OceanosReportBuilderMethod(Specification.settings.getTemplateStream(), Specification.settings.getConfigStream());
+		oceanosDataReaderMethod.pd = pd;
 		
 		specification.init(topBomLine, oceanosValidateMethod, oceanosDataReaderMethod, oceanosPrepareMethod, oceanosXmlBuilderMethod, oceanosReportBuilderMethod, oceanosAttachMethod);
 		
@@ -115,18 +117,7 @@ public class SampleHandler extends AbstractHandler {
 				// TODO Need to make it start async right when SP button is pressed
 				// ReportBuilder reportBuilder = new PDFBuilder(Specification.getDefaultSpecificationPDFTemplate(), Specification.getDefaultSpecificationPDFConfig());
 				PerfTrack.prepare("readBOMData");
-				final ProgressMonitorDialog pd = new ProgressMonitorDialog(HandlerUtil.getActiveShell(event).getShell());
-				try {
-					pd.run(true /*fork*/, true /*cancelable*/, new IRunnableWithProgress() {
-					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-						monitor.beginTask("Чтение данных", 100);
-						specification.readBOMData();
-						monitor.done();
-					}
-					});
-				} catch (InvocationTargetException | InterruptedException e) {
-					e.printStackTrace();
-				}
+				specification.readBOMData();
 				PerfTrack.addToLog("readBOMData");
 				
 				if(specification.getErrorList().size()>0){

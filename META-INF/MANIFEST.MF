@@ -17,8 +17,11 @@ Require-Bundle: org.eclipse.ui,
  TcSoaCoreTypes;bundle-version="10000.1.0",
  TcSoaAdministrationLoose;bundle-version="10000.1.0",
  TcSoaAdministrationRac;bundle-version="10000.1.0",
- ru.idealplm.xml2pdf2;bundle-version="3.0.0"
+ ru.idealplm.xml2pdf2;bundle-version="3.0.0",
+ TcSoaStructureManagementRac;bundle-version="10000.1.0",
+ TcSoaCadRac;bundle-version="10000.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: com.teamcenter.rac.form.datebutton,
+ com.teamcenter.services.rac.cad._2007_01,
  ru.idealplm.xml2pdf2.handlers
