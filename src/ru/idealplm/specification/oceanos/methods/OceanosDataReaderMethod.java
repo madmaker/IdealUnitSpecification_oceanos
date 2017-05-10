@@ -82,7 +82,9 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 					bomLine = (TCComponentBOMLine) bomQueue.take().getComponent();
 					BlockLine line = blFactory.newBlockLine(bomLine);
 					line.isSubstitute = false;
-					uids.put(line.uid, line);
+					if(line.blockContentType != BlockContentType.MATERIALS){
+						uids.put(line.uid, line);
+					}
 					for(TCComponentBOMLine comp : bomLine.listSubstitutes()){
 						BlockLine substituteLine = blFactory.newBlockLine(comp);
 						substituteLine.attributes.setPosition(line.attributes.getPosition()+"*");
@@ -98,37 +100,38 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 					}
 					validateBOMLineAttributess(line);
 					
-					if(line.blockContentType == BlockContentType.MATERIALS){
-						if(materialUIDs.containsKey(line.uid+line.getProperty("SE Cut Length"))){
-								BlockLine storedLine = materialUIDs.get(line.uid+line.getProperty("SE Cut Length"));
-								if(storedLine.getProperty("FromGeomMat").isEmpty()){
-									storedLine.addProperty("FromGeomMat", line.getProperty("FromGeomMat"));
-								}
-								if(storedLine.getProperty("FromMat").isEmpty()){
-									storedLine.addProperty("FromMat", line.getProperty("FromMat"));
-								}
-								if(line.getProperty("SE Cut Length").isEmpty() && storedLine.getProperty("SE Cut Length").isEmpty()){
-									// If both are null, then we just update stored line attributes with current line attributes
-									storedLine.attributes.createKits();
-									storedLine.attributes.addKit(line.attributes.getKits());
-									storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
-									storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
-								} else if(!line.getProperty("SE Cut Length").isEmpty() && !storedLine.getProperty("SE Cut Length").isEmpty()) {
-									// If both have different not null SE Cut Length attribute values 
-									// then we just update stored line attributes with current line attributes
-									storedLine.attributes.createKits();
-									storedLine.attributes.addKit(line.attributes.getKits());
-									storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
-									storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
-								} else {
+					if(line.blockContentType == BlockContentType.MATERIALS)
+					{
+						if(uids.containsKey(line.uid))
+						{
+							BlockLine storedLine = uids.get(line.uid);
+							
+							if(line.getProperty("SE Cut Length").equals(storedLine.getProperty("SE Cut Length"))){
+								if(storedLine.attributes.getPosition().trim().isEmpty())
+									storedLine.attributes.setPosition(line.attributes.getPosition());
+								storedLine.attributes.createKits();
+								storedLine.attributes.addKit(line.attributes.getKits());
+								storedLine.addRefBOMLine(line.getRefBOMLines().get(0));
+								storedLine.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
+								if(!line.getProperty("SE Cut Length").isEmpty())
+									storeSourceOfMaterialWithSECutLength(storedLine, line);
+							} else {
+								if(storedLine.getProperty("SE Cut Length").isEmpty() || line.getProperty("SE Cut Length").isEmpty()) {									
 									// If one is empty and other one is not, then we have an error
 									// It is not allowed for the same material to have 2 occurences,
 									// where one of them does have SE Cut Length attribute and the other one doesn't
-									specification.getErrorList().addError(new Error("ERROR", "ќтсутствует значение атрибута SE Cut Length дл€ материала с именем "+line.attributes.getStringValueFromField(FormField.ID)));
+									specification.getErrorList().addError(new Error("ERROR", "ќтсутствует значение атрибута SE Cut Length дл€ материала " + storedLine.getProperty("object_string")));
+								} else {
+									storedLine.attachedLines.add(line);
+									materialUIDs.put(line.uid+line.getProperty("SE Cut Length"), line);
+									storeSourceOfMaterialWithSECutLength(storedLine, line);
 								}
+							}
 						} else {
-							materialUIDs.put(line.uid+line.getProperty("SE Cut Length"), line);
-							blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid+line.getProperty("SE Cut Length"), line);
+							uids.put(line.uid, line);
+							if(!line.getProperty("SE Cut Length").isEmpty())
+								materialUIDs.containsKey(line.uid+line.getProperty("SE Cut Length"));
+							blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid, line);
 						}
 					} else {
 						blockList.getBlock(line.blockContentType, line.blockType).addBlockLine(line.uid, line);
@@ -141,6 +144,16 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 			}
 		}
 		
+	}
+	
+	private void storeSourceOfMaterialWithSECutLength(BlockLine storedLine, BlockLine currentLine)
+	{
+		if(storedLine.getProperty("FromGeomMat").isEmpty()){
+			storedLine.addProperty("FromGeomMat", currentLine.getProperty("FromGeomMat"));
+		}
+		if(storedLine.getProperty("FromMat").isEmpty()){
+			storedLine.addProperty("FromMat", currentLine.getProperty("FromMat"));
+		}
 	}
 
 	@Override

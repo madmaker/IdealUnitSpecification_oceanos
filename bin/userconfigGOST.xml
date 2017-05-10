@@ -1,0 +1,28 @@
+<fop version="1.0">
+
+	<entry>
+       <key>baseDir</key>
+       <value>\</value>
+    </entry>
+    <renderers>
+        <renderer mime="application/pdf">
+            <fonts>
+                <!--font kerning="yes" embed-url="file:///c:/windows/fonts/calibri.ttf">
+                    <font-triplet name="arial" style="normal" weight="normal"/>
+                </font-->
+                <font kerning="yes" embed-url="file:///c:/windows/fonts/gost.ttf">
+                    <font-triplet name="arial" style="normal" weight="normal"/>
+                </font>
+                <font kerning="yes" embed-url="file:///c:/windows/fonts/gost_a_italic.ttf">
+                    <font-triplet name="arial" style="italic" weight="normal"/>
+                </font>
+                <font kerning="yes" embed-url="file:///c:/windows/fonts/gost_a_Bold.ttf">
+                    <font-triplet name="arial" style="normal" weight="bold"/>
+                </font>	
+                <font kerning="yes" embed-url="file:///c:/windows/fonts/gost_a_Bold_italic.ttf">
+                    <font-triplet name="arial" style="italic" weight="bold"/>
+                </font>	              
+            </fonts>
+         </renderer>
+    </renderers>
+</fop>

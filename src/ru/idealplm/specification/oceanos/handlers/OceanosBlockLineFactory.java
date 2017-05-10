@@ -164,6 +164,7 @@ public class OceanosBlockLineFactory extends BlockLineFactory{
 				resultBlockLine.addProperty("CleanName", item.getProperty("oc9_RightName"));
 				resultBlockLine.addProperty("FromGeomMat", "");
 				resultBlockLine.addProperty("FromMat", "true");
+				resultBlockLine.addProperty("object_string", bomLine.getProperty("object_string"));
 				if(!seCutLength.isEmpty() && !properties[7].equals("*")){
 					Specification.errorList.addError(new Error("ERROR", "У материала с идентификатором " + item.getProperty("item_id") + " единицы измерения отличны от шт."));
 				}
