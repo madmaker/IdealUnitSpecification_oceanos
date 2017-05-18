@@ -122,9 +122,21 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 									// where one of them does have SE Cut Length attribute and the other one doesn't
 									specification.getErrorList().addError(new Error("ERROR", "ќтсутствует значение атрибута SE Cut Length дл€ материала " + storedLine.getProperty("object_string")));
 								} else {
-									storedLine.attachedLines.add(line);
-									materialUIDs.put(line.uid+line.getProperty("SE Cut Length"), line);
-									storeSourceOfMaterialWithSECutLength(storedLine, line);
+									if(materialUIDs.containsKey(line.uid+line.getProperty("SE Cut Length"))){
+										BlockLine stored = materialUIDs.get(line.uid+line.getProperty("SE Cut Length"));
+										if(stored.attributes.getPosition().trim().isEmpty())
+											stored.attributes.setPosition(line.attributes.getPosition());
+										stored.attributes.createKits();
+										stored.attributes.addKit(line.attributes.getKits());
+										stored.addRefBOMLine(line.getRefBOMLines().get(0));
+										stored.attributes.addQuantity(line.attributes.getStringValueFromField(FormField.QUANTITY));
+										if(!line.getProperty("SE Cut Length").isEmpty())
+											storeSourceOfMaterialWithSECutLength(stored, line);
+									} else {										
+										storedLine.attachedLines.add(line);
+										materialUIDs.put(line.uid+line.getProperty("SE Cut Length"), line);
+										storeSourceOfMaterialWithSECutLength(storedLine, line);
+									}
 								}
 							}
 						} else {

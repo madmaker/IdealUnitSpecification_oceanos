@@ -62,7 +62,7 @@ public class SampleHandler extends AbstractHandler {
 		final TCComponentBOMLine topBomLine = Activator.getPSEService().getTopBOMLine();
 		final Specification specification = Specification.getInstance();
 		Specification.settings.setTemplateStream(SampleHandler.class.getResourceAsStream("/pdf/OceanosSpecPDFTemplate.xsl"));
-		Specification.settings.setConfigStream(SampleHandler.class.getResourceAsStream("/pdf/userconfig.xml"));
+		Specification.settings.setConfigStream(SampleHandler.class.getResourceAsStream("/pdf/userconfigGOST.xml"));
 		OceanosAttachMethod oceanosAttachMethod = new OceanosAttachMethod();
 		OceanosDataReaderMethod oceanosDataReaderMethod = new OceanosDataReaderMethod();
 		OceanosPrepareMethod oceanosPrepareMethod = new OceanosPrepareMethod();
@@ -102,7 +102,7 @@ public class SampleHandler extends AbstractHandler {
 		blockList.getBlock(BlockContentType.KITS, BlockType.DEFAULT).isRenumerizable = false;
 		blockList.getBlock(BlockContentType.KITS, BlockType.ME).isRenumerizable = false;
 		
-		setColumnLengthsGost();
+		setColumnLengths();
 		
 		String[] emptyValues = {};
 		Specification.settings.setNonbreakableWords(Specification.preferenceService.getStringArray(Specification.preferenceService.TC_preference_site, "Oc9_Spec_NonbreakableWords", emptyValues));
@@ -248,25 +248,14 @@ public class SampleHandler extends AbstractHandler {
 		Specification.settings.addStringProperty("blockSettings", settingsString);
 	}
 	
-	void setColumnLengthsArial()
+	void setColumnLengths()
 	{
 		Specification.settings.setColumnLength(FormField.FORMAT, 3);
 		Specification.settings.setColumnLength(FormField.ZONE, 3);
 		Specification.settings.setColumnLength(FormField.ID, 3);
-		Specification.settings.setColumnLength(FormField.NAME, 204.0);
+		Specification.settings.setColumnLength(FormField.NAME, 196.0);
 		Specification.settings.setColumnLength(FormField.POSITION, 3);
 		Specification.settings.setColumnLength(FormField.QUANTITY, 3);
 		Specification.settings.setColumnLength(FormField.REMARK, 88);
-	}
-	
-	void setColumnLengthsGost()
-	{
-		Specification.settings.setColumnLength(FormField.FORMAT, 3);
-		Specification.settings.setColumnLength(FormField.ZONE, 3);
-		Specification.settings.setColumnLength(FormField.ID, 3);
-		Specification.settings.setColumnLength(FormField.NAME, 230.0);
-		Specification.settings.setColumnLength(FormField.POSITION, 3);
-		Specification.settings.setColumnLength(FormField.QUANTITY, 3);
-		Specification.settings.setColumnLength(FormField.REMARK, 96);
 	}
 }

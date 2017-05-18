@@ -259,6 +259,7 @@ public class OceanosXmlBuilderMethod implements IXmlBuilderMethod{
 		
 		for(int i = 0; i < line.lineHeight; i++){
 			node_occ = document.createElement("Occurrence");
+			node_occ.setAttribute("font", "italic");
 			if(i==0){
 				node = document.createElement("Col_" + 1);
 				node.setAttribute("align", "center");
