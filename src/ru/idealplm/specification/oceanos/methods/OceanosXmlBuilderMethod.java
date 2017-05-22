@@ -312,6 +312,7 @@ public class OceanosXmlBuilderMethod implements IXmlBuilderMethod{
 			for(String string : globalRemark){
 				node_occ = document.createElement("Occurrence");
 				node_occ.setAttribute("merge", "true");
+				node_occ.setAttribute("font", "italic");
 				node = document.createElement("Col_" + 4);
 				node.setAttribute("align", "left");
 				node.setTextContent(string);
