@@ -5,7 +5,6 @@ Bundle-SymbolicName: ru.idealplm.specification.oceanos;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- ru.idealplm.utils.specification;bundle-version="1.0.0",
  com.teamcenter.rac.kernel;bundle-version="10000.1.0",
  com.teamcenter.rac.aifrcp;bundle-version="10000.1.0",
  com.teamcenter.rac.util;bundle-version="10000.1.0",

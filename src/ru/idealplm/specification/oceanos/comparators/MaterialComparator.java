@@ -2,8 +2,7 @@ package ru.idealplm.specification.oceanos.comparators;
 
 import java.util.Comparator;
 
-import ru.idealplm.utils.specification.blockline.BlockLine;
-import ru.idealplm.utils.specification.Specification.FormField;
+import ru.idealplm.specification.blockline.BlockLine;
 
 public class MaterialComparator implements Comparator<BlockLine>{
 

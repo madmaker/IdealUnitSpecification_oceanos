@@ -3,8 +3,8 @@ package ru.idealplm.specification.oceanos.comparators;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import ru.idealplm.utils.specification.blockline.BlockLine;
-import ru.idealplm.utils.specification.Specification;
+import ru.idealplm.specification.blockline.BlockLine;
+import ru.idealplm.specification.core.Specification;
 
 public class DocumentComparator implements Comparator<BlockLine>{
 	

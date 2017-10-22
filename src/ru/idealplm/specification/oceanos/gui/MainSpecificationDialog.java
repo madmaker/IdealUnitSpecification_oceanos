@@ -28,12 +28,12 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 
+import ru.idealplm.specification.core.Block;
+import ru.idealplm.specification.core.BlockList;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.core.Specification.BlockType;
 import ru.idealplm.specification.oceanos.util.PerfTrack;
-import ru.idealplm.utils.specification.Block;
-import ru.idealplm.utils.specification.BlockList;
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.Specification.BlockType;
-import ru.idealplm.utils.specification.util.GeneralUtils;
+import ru.idealplm.specification.util.GeneralUtils;
 
 import org.eclipse.swt.widgets.DateTime;
 

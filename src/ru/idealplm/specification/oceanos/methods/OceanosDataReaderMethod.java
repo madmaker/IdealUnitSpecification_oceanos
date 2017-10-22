@@ -20,21 +20,21 @@ import com.teamcenter.rac.kernel.TCComponentItem;
 import com.teamcenter.rac.kernel.TCComponentItemRevision;
 import com.teamcenter.rac.kernel.TCException;
 
+import ru.idealplm.specification.blockline.BlockLine;
+import ru.idealplm.specification.core.BlockList;
+import ru.idealplm.specification.core.Error;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.core.Specification.BlockContentType;
+import ru.idealplm.specification.core.Specification.BlockType;
+import ru.idealplm.specification.core.Specification.FormField;
+import ru.idealplm.specification.methods.IDataReaderMethod;
 import ru.idealplm.specification.oceanos.handlers.OceanosBlockLineFactory;
 import ru.idealplm.specification.oceanos.handlers.linehandlers.OceanosBlockLineHandler;
 import ru.idealplm.specification.oceanos.util.PerfTrack;
-import ru.idealplm.utils.specification.blockline.BlockLine;
-import ru.idealplm.utils.specification.BlockList;
-import ru.idealplm.utils.specification.Error;
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.Specification.BlockContentType;
-import ru.idealplm.utils.specification.Specification.BlockType;
-import ru.idealplm.utils.specification.Specification.FormField;
-import ru.idealplm.utils.specification.methods.IDataReaderMethod;
-import ru.idealplm.utils.specification.util.GeneralUtils;
+import ru.idealplm.specification.util.GeneralUtils;
 
-public class OceanosDataReaderMethod implements IDataReaderMethod{
-	
+public class OceanosDataReaderMethod implements IDataReaderMethod
+{	
 	private Specification specification = Specification.getInstance();
 	private BlockList blockList;
 	private BlockingQueue<AIFComponentContext> bomQueue;
@@ -49,7 +49,8 @@ public class OceanosDataReaderMethod implements IDataReaderMethod{
 	private HashMap<String, BlockLine> uids;
 	private HashMap<String, BlockLine> uidsSubstitute;
 	
-	public OceanosDataReaderMethod() {
+	public OceanosDataReaderMethod()
+	{
 		bl_sequence_noList = new ArrayList<String>();
 		oc9_IsFromEAsmList = new HashMap<String, Boolean>();
 		oc9_DisableChangeFindNoList = new HashMap<String, Boolean>();

@@ -34,8 +34,8 @@ import com.teamcenter.services.rac.core._2008_06.DataManagement.ReviseInfo;
 import com.teamcenter.services.rac.core._2008_06.DataManagement.ReviseOutput;
 import com.teamcenter.services.rac.core._2008_06.DataManagement.ReviseResponse2;
 
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.methods.IAttachMethod;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.methods.IAttachMethod;
 
 public class OceanosAttachMethod implements IAttachMethod{
 	

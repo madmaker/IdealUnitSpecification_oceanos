@@ -31,21 +31,19 @@ import ru.idealplm.specification.oceanos.methods.OceanosReportBuilderMethod;
 import ru.idealplm.specification.oceanos.methods.OceanosValidateMethod;
 import ru.idealplm.specification.oceanos.methods.OceanosXmlBuilderMethod;
 import ru.idealplm.specification.oceanos.util.PerfTrack;
-import ru.idealplm.utils.specification.Error;
-import ru.idealplm.utils.specification.Block;
-import ru.idealplm.utils.specification.BlockList;
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.Specification.BlockContentType;
-import ru.idealplm.utils.specification.Specification.BlockType;
-import ru.idealplm.utils.specification.SpecificationSettings;
+import ru.idealplm.specification.core.Block;
+import ru.idealplm.specification.core.BlockList;
+import ru.idealplm.specification.core.Error;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.core.Specification.BlockContentType;
+import ru.idealplm.specification.core.Specification.BlockType;
+import ru.idealplm.specification.core.Specification.FormField;
 
 import com.teamcenter.rac.aif.AIFDesktop;
 import com.teamcenter.rac.kernel.TCComponentBOMLine;
 import com.teamcenter.rac.kernel.TCException;
 import com.teamcenter.rac.pse.plugin.Activator;
 
-import ru.idealplm.utils.specification.Specification.FormField;
-import ru.idealplm.utils.specification.comparators.NumberComparator;
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
  * @see org.eclipse.core.commands.IHandler

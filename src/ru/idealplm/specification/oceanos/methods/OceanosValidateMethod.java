@@ -6,13 +6,12 @@ import java.util.Arrays;
 import com.teamcenter.rac.kernel.TCComponentBOMLine;
 import com.teamcenter.rac.kernel.TCComponentItem;
 
-import ru.idealplm.utils.specification.Error;
-import ru.idealplm.utils.specification.ErrorList;
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.methods.IValidateMethod;
+import ru.idealplm.specification.core.Error;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.methods.IValidateMethod;
 
-public class OceanosValidateMethod implements IValidateMethod{
-
+public class OceanosValidateMethod implements IValidateMethod
+{
 	private Specification specification = Specification.getInstance();
 	
 	@Override

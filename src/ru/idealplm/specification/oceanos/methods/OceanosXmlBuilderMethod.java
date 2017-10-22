@@ -16,19 +16,19 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import ru.idealplm.utils.specification.Block;
-import ru.idealplm.utils.specification.blockline.BlockLine;
-import ru.idealplm.utils.specification.BlockList;
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.Specification.BlockContentType;
-import ru.idealplm.utils.specification.Specification.BlockType;
-import ru.idealplm.utils.specification.Specification.FormField;
-import ru.idealplm.utils.specification.methods.IXmlBuilderMethod;
-import ru.idealplm.utils.specification.util.GeneralUtils;
-import ru.idealplm.utils.specification.util.LineUtil;
+import ru.idealplm.specification.blockline.BlockLine;
+import ru.idealplm.specification.core.Block;
+import ru.idealplm.specification.core.BlockList;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.core.Specification.BlockContentType;
+import ru.idealplm.specification.core.Specification.BlockType;
+import ru.idealplm.specification.core.Specification.FormField;
+import ru.idealplm.specification.methods.IXmlBuilderMethod;
+import ru.idealplm.specification.util.GeneralUtils;
+import ru.idealplm.specification.util.LineUtil;
 
-public class OceanosXmlBuilderMethod implements IXmlBuilderMethod{
-	
+public class OceanosXmlBuilderMethod implements IXmlBuilderMethod
+{	
 	private Specification specification = Specification.getInstance();
 	final private double maxWidthGlobalRemark = 474.0;
 	private ArrayList<Integer> max_cols_sise_a1;

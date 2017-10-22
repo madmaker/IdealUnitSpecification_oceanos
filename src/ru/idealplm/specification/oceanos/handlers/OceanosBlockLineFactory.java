@@ -7,15 +7,15 @@ import com.teamcenter.rac.kernel.TCComponentItem;
 import com.teamcenter.rac.kernel.TCComponentItemRevision;
 
 import ru.idealplm.specification.oceanos.handlers.linehandlers.OceanosBlockLineHandler;
-import ru.idealplm.utils.specification.blockline.BlockLine;
-import ru.idealplm.utils.specification.BlockLineFactory;
-import ru.idealplm.utils.specification.Error;
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.Specification.BlockContentType;
-import ru.idealplm.utils.specification.Specification.BlockType;
+import ru.idealplm.specification.blockline.BlockLine;
+import ru.idealplm.specification.core.BlockLineFactory;
+import ru.idealplm.specification.core.Error;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.core.Specification.BlockContentType;
+import ru.idealplm.specification.core.Specification.BlockType;
 
-public class OceanosBlockLineFactory extends BlockLineFactory{
-	
+public class OceanosBlockLineFactory extends BlockLineFactory
+{	
 	private final String[] blProps = new String[] { 
 			"Oc9_Zone",
 			"bl_sequence_no",

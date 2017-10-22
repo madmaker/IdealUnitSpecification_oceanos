@@ -18,18 +18,16 @@ import com.teamcenter.rac.kernel.TCComponentRevisionRuleType;
 import com.teamcenter.rac.kernel.TCException;
 import com.teamcenter.rac.kernel.TCSession;
 
+import ru.idealplm.specification.blockline.BlockLine;
+import ru.idealplm.specification.core.Block;
+import ru.idealplm.specification.core.Error;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.core.Specification.BlockContentType;
+import ru.idealplm.specification.methods.IPrepareMethod;
 import ru.idealplm.specification.oceanos.comparators.PositionComparator;
-import ru.idealplm.utils.specification.Block;
-import ru.idealplm.utils.specification.blockline.BlockLine;
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.Specification.BlockContentType;
-import ru.idealplm.utils.specification.Specification.BlockType;
-import ru.idealplm.utils.specification.Specification.FormField;
-import ru.idealplm.utils.specification.Error;
-import ru.idealplm.utils.specification.methods.IPrepareMethod;
 
-public class OceanosPrepareMethod implements IPrepareMethod{
-	
+public class OceanosPrepareMethod implements IPrepareMethod
+{	
 	private Specification specification;
 	private HashMap<String,String> prevPosMap = new HashMap<String,String>();
 	private ArrayList<BlockLine> postAddMat = new ArrayList<BlockLine>();

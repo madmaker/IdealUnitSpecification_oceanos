@@ -1,13 +1,10 @@
 package ru.idealplm.specification.oceanos.handlers.linehandlers;
 
-import ru.idealplm.utils.specification.blockline.BlockLine;
-import ru.idealplm.utils.specification.BlockLineHandler;
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.Specification.FormField;
-import ru.idealplm.utils.specification.util.LineUtil;
+import ru.idealplm.specification.blockline.BlockLine;
+import ru.idealplm.specification.core.BlockLineHandler;
 
-public class OceanosBlockLineHandler implements BlockLineHandler{
-
+public class OceanosBlockLineHandler implements BlockLineHandler
+{
 	@Override
 	public synchronized void prepareBlockLine(BlockLine bomLine) {
 		if(bomLine.attributes.getFormat()==null){

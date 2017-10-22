@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import ru.idealplm.utils.specification.Error;
+import ru.idealplm.specification.core.Error;
 
 public class ErrorListDialog extends Dialog{
 	

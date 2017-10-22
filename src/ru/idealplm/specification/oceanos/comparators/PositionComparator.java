@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ru.idealplm.utils.specification.blockline.BlockLine;
+import ru.idealplm.specification.blockline.BlockLine;
 
 public class PositionComparator implements Comparator<BlockLine> {
 

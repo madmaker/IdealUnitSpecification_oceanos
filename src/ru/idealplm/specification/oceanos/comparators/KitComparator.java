@@ -3,9 +3,9 @@ package ru.idealplm.specification.oceanos.comparators;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import ru.idealplm.utils.specification.blockline.BlockLine;
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.Specification.FormField;
+import ru.idealplm.specification.blockline.BlockLine;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.core.Specification.FormField;
 
 public class KitComparator implements Comparator<BlockLine>{
 	

@@ -14,13 +14,12 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
-import ru.idealplm.utils.specification.Specification;
-import ru.idealplm.utils.specification.SpecificationSettings;
-import ru.idealplm.utils.specification.methods.IReportBuilderMethod;
+import ru.idealplm.specification.core.Specification;
+import ru.idealplm.specification.methods.IReportBuilderMethod;
 import ru.idealplm.xml2pdf2.handlers.PDFBuilder;
 
-public class OceanosReportBuilderMethod implements IReportBuilderMethod{
-
+public class OceanosReportBuilderMethod implements IReportBuilderMethod
+{
 	private Specification specification = Specification.getInstance();
 	private PDFBuilder pdfBuilder;
 	
