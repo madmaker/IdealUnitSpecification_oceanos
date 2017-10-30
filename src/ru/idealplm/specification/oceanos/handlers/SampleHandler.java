@@ -88,17 +88,9 @@ public class SampleHandler extends AbstractHandler {
 		blockList.addBlock(new Block(BlockContentType.OTHERS, BlockType.DEFAULT, defaultNameComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.MATERIALS, BlockType.DEFAULT, matComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.KITS, BlockType.DEFAULT, kitComparator, kitComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.COMPLEXES, BlockType.ME, defaultIDComparator, defaultPosComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.ASSEMBLIES, BlockType.ME, defaultIDComparator, defaultPosComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.DETAILS, BlockType.ME, detailComparator, defaultPosComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.STANDARDS, BlockType.ME, defaultNameComparator, defaultPosComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.OTHERS, BlockType.ME, defaultNameComparator, posComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.MATERIALS, BlockType.ME, matComparator, posComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.KITS, BlockType.ME, kitComparator, kitComparator, 0));
 		
 		blockList.getBlock(BlockContentType.DOCS, BlockType.DEFAULT).isRenumerizable = false;
 		blockList.getBlock(BlockContentType.KITS, BlockType.DEFAULT).isRenumerizable = false;
-		blockList.getBlock(BlockContentType.KITS, BlockType.ME).isRenumerizable = false;
 		
 		Specification.settings.setColumnLength(FormField.FORMAT, 3);
 		Specification.settings.setColumnLength(FormField.ZONE, 3);
@@ -211,7 +203,7 @@ public class SampleHandler extends AbstractHandler {
 		for(String blockProps:settingsString.split("&")){
 			String[] props = blockProps.split(":");
 			if(props.length!=4) continue;
-			Block block = blockList.getBlock(BlockContentType.values()[Character.getNumericValue(props[0].charAt(0))], props[0].charAt(1)=='0'?BlockType.DEFAULT:BlockType.ME);
+			Block block = blockList.getBlock(BlockContentType.values()[Character.getNumericValue(props[0].charAt(0))], BlockType.DEFAULT);
 			if(block!=null){
 				block.reservePosNum = Integer.parseInt(props[1]);
 				block.reserveLinesNum = Integer.parseInt(props[2]);

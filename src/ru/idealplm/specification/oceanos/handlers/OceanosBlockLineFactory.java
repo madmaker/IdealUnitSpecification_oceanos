@@ -16,16 +16,17 @@ import ru.idealplm.specification.core.Specification.BlockType;
 
 public class OceanosBlockLineFactory extends BlockLineFactory
 {	
-	private final String[] blProps = new String[] { 
+	private final String[] blProps = new String[]
+	{
 			"Oc9_Zone",
 			"bl_sequence_no",
 			"bl_quantity",
 			"Oc9_Note",
-			"Oc9_IsFromEAssembly", //у вхождений с одинаковым sequence_no должно быть одинаковое значение
 			"Oc9_DisChangeFindNo", //у вхождений с одинаковым sequence_no должно быть одинаковое значение
 			"oc9_KITName",
 			"bl_item_uom_tag",
-			"Oc9_KITs"
+			"Oc9_KITs",
+			"SE Assembly Reports"
 	};
 
 	@Override
@@ -35,20 +36,21 @@ public class OceanosBlockLineFactory extends BlockLineFactory
 			TCComponentItemRevision itemIR = bomLine.getItemRevision();
 			String uid = itemIR.getUid();
 			String[] properties = bomLine.getProperties(blProps);
-			boolean isDefault = properties[4].trim().isEmpty();
 			
-			//System.out.println("_processing by processor " + id + " *** *** " + bomLine.getItem().getType() + " --> " + Arrays.toString(properties));
-			//TODO validateBOMLineAttributes(properties[1], properties[4], properties[5]);
+			if(properties[8].equals("0"))
+			{
+				return null;
+			}
 			
 			OceanosBlockLineHandler blockLineHandler = new OceanosBlockLineHandler();
 			BlockLine resultBlockLine = new BlockLine(blockLineHandler);
 			resultBlockLine.attributes.setZone(properties[0]);
 			resultBlockLine.attributes.setPosition(properties[1]);
-			resultBlockLine.isRenumerizable = properties[5].trim().equals("");
+			resultBlockLine.isRenumerizable = properties[4].trim().equals("");
 			resultBlockLine.uid = uid;
 			
 			if(item.getType().equals("Oc9_CompanyPart")){
-				if(!properties[8].isEmpty()){
+				if(!properties[7].isEmpty()){
 					Specification.errorList.addError(new Error("ERROR", "Объект с идентификатором " + item.getProperty("item_id") + " имеет ссылку на комплект."));
 				}
 				String typeOfPart = item.getProperty("oc9_TypeOfPart");
@@ -75,7 +77,7 @@ public class OceanosBlockLineFactory extends BlockLineFactory
 						resultBlockLine.blockContentType = BlockContentType.COMPLEXES;
 						//blockList.getBlock(BlockContentType.COMPLEXES, isDefault?"Default":"ME").addBlockLine(uid, resultBlockLine);
 					}
-					resultBlockLine.blockType = isDefault?BlockType.DEFAULT:BlockType.ME;
+					resultBlockLine.blockType = BlockType.DEFAULT;
 				} else if(typeOfPart.equals("Деталь")){
 					/*****************************Детали*********************************/
 					boolean hasDraft = false;
@@ -132,7 +134,7 @@ public class OceanosBlockLineFactory extends BlockLineFactory
 						resultBlockLine.getAttachedLines().add(blank);
 					}
 					resultBlockLine.blockContentType = BlockContentType.DETAILS;
-					resultBlockLine.blockType = isDefault?BlockType.DEFAULT:BlockType.ME;
+					resultBlockLine.blockType = BlockType.DEFAULT;
 					//blockList.getBlock(BlockContentType.DETAILS, isDefault?"Default":"ME").addBlockLine(uid, resultBlockLine);
 				} else if(typeOfPart.equals("Комплект")){
 					/****************************Комплекты********************************/
@@ -141,7 +143,7 @@ public class OceanosBlockLineFactory extends BlockLineFactory
 					resultBlockLine.attributes.setQuantity(properties[2]);
 					resultBlockLine.addRefBOMLine(bomLine);
 					resultBlockLine.blockContentType = BlockContentType.KITS;
-					resultBlockLine.blockType = isDefault?BlockType.DEFAULT:BlockType.ME;
+					resultBlockLine.blockType = BlockType.DEFAULT;
 					//blockList.getBlock(BlockContentType.KITS, isDefault?"Default":"ME").addBlockLine(uid, resultBlockLine);
 				} else if(typeOfPart.equals("")){
 					Specification.errorList.addError(new Error("ERROR", "У вхождения с обозначением " + properties[2] + "отсутствует значение свойства \"Тип изделия\""));
@@ -155,17 +157,17 @@ public class OceanosBlockLineFactory extends BlockLineFactory
 				resultBlockLine.attributes.setQuantity(properties[2]);
 				resultBlockLine.attributes.setRemark(properties[3]);
 				resultBlockLine.addRefBOMLine(bomLine);
-				if(!properties[8].isEmpty()){
+				if(!properties[7].isEmpty()){
 					resultBlockLine.attributes.createKits();
-					resultBlockLine.attributes.addKit(properties[8], properties[6], properties[2].isEmpty()?1:Integer.parseInt(properties[2]));
+					resultBlockLine.attributes.addKit(properties[7], properties[5], properties[2].isEmpty()?1:Integer.parseInt(properties[2]));
 				}
 				if(item.getProperty("oc9_TypeOfPart").equals("Прочее изделие")){
 					resultBlockLine.blockContentType = BlockContentType.OTHERS;
-					resultBlockLine.blockType = isDefault?BlockType.DEFAULT:BlockType.ME;
+					resultBlockLine.blockType = BlockType.DEFAULT;
 					//blockList.getBlock(BlockContentType.OTHERS, isDefault?"Default":"ME").addBlockLine(uid, resultBlockLine);
 				} else {
 					resultBlockLine.blockContentType = BlockContentType.STANDARDS;
-					resultBlockLine.blockType = isDefault?BlockType.DEFAULT:BlockType.ME;
+					resultBlockLine.blockType = BlockType.DEFAULT;
 					//blockList.getBlock(BlockContentType.STANDARDS, isDefault?"Default":"ME").addBlockLine(uid, resultBlockLine);
 				}
 			} else if(item.getType().equals("Oc9_Material")){
@@ -177,20 +179,20 @@ public class OceanosBlockLineFactory extends BlockLineFactory
 				}
 				resultBlockLine.attributes.setQuantity(properties[2]);
 				resultBlockLine.addRefBOMLine(bomLine);
-				resultBlockLine.addProperty("UOM", properties[7]);
+				resultBlockLine.addProperty("UOM", properties[6]);
 				resultBlockLine.addProperty("SE Cut Length", seCutLength);
 				resultBlockLine.addProperty("CleanName", item.getProperty("oc9_RightName"));
 				resultBlockLine.addProperty("FromGeomMat", "");
 				resultBlockLine.addProperty("FromMat", "true");
-				if(!seCutLength.isEmpty() && !properties[7].equals("*")){
+				if(!seCutLength.isEmpty() && !properties[6].equals("*")){
 					Specification.errorList.addError(new Error("ERROR", "У материала с идентификатором " + item.getProperty("item_id") + " единицы измерения отличны от шт."));
 				}
-				if(!properties[8].isEmpty()){
+				if(!properties[7].isEmpty()){
 					resultBlockLine.attributes.createKits();
-					resultBlockLine.attributes.addKit(properties[8], properties[6], properties[2].isEmpty()?1:Integer.parseInt(properties[2]));
+					resultBlockLine.attributes.addKit(properties[7], properties[5], properties[2].isEmpty()?1:Integer.parseInt(properties[2]));
 				}
 				resultBlockLine.blockContentType = BlockContentType.MATERIALS;
-				resultBlockLine.blockType = isDefault?BlockType.DEFAULT:BlockType.ME;
+				resultBlockLine.blockType = BlockType.DEFAULT;
 			} else if(item.getType().equals("Oc9_GeomOfMat")){
 				/*************************Геометрии материалов****************************/
 				AIFComponentContext[] materialBOMLines = bomLine.getChildren();
@@ -218,7 +220,7 @@ public class OceanosBlockLineFactory extends BlockLineFactory
 					resultBlockLine.addProperty("FromMat", "");
 					resultBlockLine.uid = materialIR.getUid();
 					resultBlockLine.blockContentType = BlockContentType.MATERIALS;
-					resultBlockLine.blockType = isDefault?BlockType.DEFAULT:BlockType.ME;
+					resultBlockLine.blockType = BlockType.DEFAULT;
 				} else {
 					Specification.errorList.addError(new Error("ERROR", "В составе геометрии материала с идентификатором " + item.getProperty("item_id") + " отсутствует материал."));
 				}

@@ -39,7 +39,6 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 	private BlockList blockList;
 	private BlockingQueue<AIFComponentContext> bomQueue;
 	private ArrayList<String> bl_sequence_noList;
-	private HashMap<String, Boolean> oc9_IsFromEAsmList;
 	private HashMap<String, Boolean> oc9_DisableChangeFindNoList;
 	private ArrayList<String> docTypesShort;
 	private ArrayList<String> docTypesLong;
@@ -52,7 +51,6 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 	public OceanosDataReaderMethod()
 	{
 		bl_sequence_noList = new ArrayList<String>();
-		oc9_IsFromEAsmList = new HashMap<String, Boolean>();
 		oc9_DisableChangeFindNoList = new HashMap<String, Boolean>();
 		docTypesShort = new ArrayList<String>();
 		docTypesLong = new ArrayList<String>();
@@ -64,22 +62,26 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 	}
 	
 	boolean atLeastOnePosIsFixed = false;
-	boolean atLeastOneME = false;
 	boolean hasPrevRev = false;
 	
-	private class OceanosBOMLineProcessor{
-
-		public OceanosBOMLineProcessor() {
+	private class OceanosBOMLineProcessor
+	{
+		public OceanosBOMLineProcessor()
+		{
 			
 		}
 		
-		public void run() {
+		public void run()
+		{
 			TCComponentBOMLine bomLine;
 			OceanosBlockLineFactory blFactory = new OceanosBlockLineFactory();
-			while(!bomQueue.isEmpty()){
-				try {
+			while(!bomQueue.isEmpty())
+			{
+				try
+				{
 					bomLine = (TCComponentBOMLine) bomQueue.take().getComponent();
 					BlockLine line = blFactory.newBlockLine(bomLine);
+					if(line == null) continue;
 					line.isSubstitute = false;
 					uids.put(line.uid, line);
 					for(TCComponentBOMLine comp : bomLine.listSubstitutes()){
@@ -90,7 +92,6 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 						line.addSubstituteBlockLine(substituteLine);
 						uidsSubstitute.put(substituteLine.uid, substituteLine);
 					}
-					if(line.blockType == BlockType.ME) atLeastOneME = true;
 					if(!line.isRenumerizable) {
 						atLeastOnePosIsFixed = true;
 					}
@@ -140,8 +141,10 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 	}
 
 	@Override
-	public void readData() {
-		try{
+	public void readData()
+	{
+		try
+		{
 			loadDocumentTypes();
 			blockList = specification.getBlockList();
 			
@@ -181,27 +184,9 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 				bomQueue = new ArrayBlockingQueue<AIFComponentContext>(childBOMLines.length);
 				bomQueue.addAll(Arrays.asList(childBOMLines));
 				PerfTrack.addToLog("Getting BOM");
-				/*ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-				for(int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-					service.submit(new MVMBOMLineProcessor(i));
-				}
-				
-				service.shutdown();
-				service.awaitTermination(3, TimeUnit.MINUTES);
-				while(!service.isTerminated()){
-					Thread.sleep(100);
-				}*/
 				OceanosBOMLineProcessor bomLineProcessor = new OceanosBOMLineProcessor();
 				bomLineProcessor.run();
 			}
-			
-			/*for (AIFComponentContext currBOMLineContext : childBOMLines){
-				if(!((TCComponentBOMLine) currBOMLineContext.getComponent()).getItem().getType().equals("Oc9_Material")){
-					((TCComponentBOMLine) currBOMLineContext.getComponent()).pack();
-				} else if(((TCComponentBOMLine) currBOMLineContext.getComponent()).getProperty("SE Cut Length").isEmpty()){
-					((TCComponentBOMLine) currBOMLineContext.getComponent()).pack();
-				}
-			}*/
 			
 			BlockList tempList = new BlockList();
 			for(int i = 0; i < blockList.size(); i++){
@@ -227,9 +212,6 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 			if(tempList.size()==0){
 				specification.getErrorList().addError(new Error("ERROR", "Отсутствуют разделы спецификации."));
 			}
-			if(atLeastOneME && Specification.settings.getStringProperty("MEDocumentId")==null){
-				specification.getErrorList().addError(new Error("ERROR", "Отсутствует документ МЭ."));
-			}
 			for(Entry<String,BlockLine> entry:uidsSubstitute.entrySet()){
 				if(uids.containsKey(entry.getKey()))	{
 					specification.getErrorList().addError(new Error("ERROR", "Объект с идентификатором " + entry.getValue().attributes.getId() + " присутствует в составе и заменах одновременно."));
@@ -247,18 +229,13 @@ public class OceanosDataReaderMethod implements IDataReaderMethod
 
 	
 	private synchronized void validateBOMLineAttributess(BlockLine line){
-		if(line.blockType==BlockType.ME) atLeastOneME = true;
-		if(atLeastOneME) Specification.settings.addBooleanProperty("hasMEBlocks", true);
 		String bl_sequence_no = line.attributes.getPosition();
 		int posInList = bl_sequence_noList.indexOf(bl_sequence_no);
 		if(posInList==-1){
 			bl_sequence_noList.add(bl_sequence_no);
-			oc9_IsFromEAsmList.put(bl_sequence_no, line.blockType!=BlockType.ME);
 			oc9_DisableChangeFindNoList.put(bl_sequence_no, line.isRenumerizable);
 		} else {
-			if(oc9_IsFromEAsmList.get(bl_sequence_no)!=(line.blockType!=BlockType.ME)){
-				this.specification.getErrorList().addError(new Error("ERROR", "У вхождений с номером позиции "+bl_sequence_no+"разные значения свойства \"Позиция из МЭ\""));
-			} else if (oc9_DisableChangeFindNoList.get(bl_sequence_no)!=line.isRenumerizable){
+			if (oc9_DisableChangeFindNoList.get(bl_sequence_no)!=line.isRenumerizable){
 				this.specification.getErrorList().addError(new Error("ERROR", "У вхождений с номером позиции "+bl_sequence_no+"разные значения свойства \"Запрет смены позиции\""));
 			}
 		}

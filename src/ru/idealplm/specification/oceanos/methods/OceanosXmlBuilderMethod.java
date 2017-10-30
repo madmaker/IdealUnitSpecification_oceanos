@@ -146,26 +146,6 @@ public class OceanosXmlBuilderMethod implements IXmlBuilderMethod
 			while(iterator.hasNext()){
 				block = iterator.next();
 				processBlock(block);
-				if(block.blockType==BlockType.DEFAULT && iterator.nextIndex()!=blockList.size()){
-					if(blockList.get(iterator.nextIndex()).blockType==BlockType.ME){
-						newPage();
-						//addEmptyLines(1);
-						String string = "Устанавливается по " + Specification.settings.getStringProperty("MEDocumentId");
-						node_occ = document.createElement("Occurrence");
-						node_occ.setAttribute("font", "underline,bold");
-						node = document.createElement("Col_" + 4);
-						node.setTextContent(string.substring(0, string.length()/2));
-						node.setAttribute("align", "right");
-						node_occ.appendChild(node);
-						node = document.createElement("Col_" + 5);
-						node.setTextContent(string.substring(string.length()/2));
-						node.setAttribute("align", "left");
-						node_occ.appendChild(node);
-						node_block.appendChild(node_occ);
-						currentLineNum++;
-						addEmptyLines(1);
-					}
-				}
 			}
 			
 			/*****temp*****/

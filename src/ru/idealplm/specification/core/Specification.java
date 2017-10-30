@@ -27,7 +27,7 @@ public class Specification {
 	
 	public static enum FormField {FORMAT, ZONE, POSITION, ID, NAME, QUANTITY, REMARK};
 	public static enum BlockContentType {DOCS, COMPLEXES, ASSEMBLIES, DETAILS, STANDARDS, OTHERS, MATERIALS, KITS};
-	public static enum BlockType {DEFAULT, ME};
+	public static enum BlockType {DEFAULT};
 	public static final SpecificationSettings settings = SpecificationSettings.getInstance();
 	
 	private BlockList blockList;

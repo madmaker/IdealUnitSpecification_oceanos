@@ -119,13 +119,6 @@ public class MainSpecificationDialog extends Dialog {
 			} else {
 				blockItem.setText(new String[]{block.blockTitle, String.valueOf(block.reservePosNum), String.valueOf(block.reserveLinesNum), String.valueOf(block.intervalPosNum)});
 			}
-			if(block.blockType==BlockType.DEFAULT && iterator.nextIndex()!=blockList.size()){
-				if(blockList.get(iterator.nextIndex()).blockType==BlockType.ME){
-					blockItem = new TableItem(table, SWT.NONE);
-					blockItem.setText(new String[]{"Устанавливается по\n" + Specification.settings.getStringProperty("MEDocumentId")});
-					blockItem.setGrayed(true);
-				}
-			}
 		}
 		text_AddedText.setText(Specification.settings.getStringProperty("AddedText")==null?"":Specification.settings.getStringProperty("AddedText"));
 		text_Litera1.setText(Specification.settings.getStringProperty("LITERA1")==null?"":Specification.settings.getStringProperty("LITERA1"));
