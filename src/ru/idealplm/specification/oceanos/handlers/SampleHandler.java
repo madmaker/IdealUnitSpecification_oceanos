@@ -50,13 +50,13 @@ import com.teamcenter.rac.pse.plugin.Activator;
  * @see org.eclipse.core.commands.AbstractHandler
  */
 @SuppressWarnings("restriction")
-public class SampleHandler extends AbstractHandler {
-	
+public class SampleHandler extends AbstractHandler
+{	
 	public SampleHandler(){}
 	
 	@SuppressWarnings("restriction")
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		
+	public Object execute(ExecutionEvent event) throws ExecutionException
+	{	
 		final TCComponentBOMLine topBomLine = Activator.getPSEService().getTopBOMLine();
 		final Specification specification = Specification.getInstance();
 		Specification.settings.setTemplateStream(SampleHandler.class.getResourceAsStream("/pdf/OceanosSpecPDFTemplate.xsl"));
@@ -95,18 +95,22 @@ public class SampleHandler extends AbstractHandler {
 		Specification.settings.setColumnLength(FormField.FORMAT, 3);
 		Specification.settings.setColumnLength(FormField.ZONE, 3);
 		Specification.settings.setColumnLength(FormField.ID, 3);
-		Specification.settings.setColumnLength(FormField.NAME, 204.0);
+		Specification.settings.setColumnLength(FormField.NAME, 280.0);
 		Specification.settings.setColumnLength(FormField.POSITION, 3);
 		Specification.settings.setColumnLength(FormField.QUANTITY, 3);
-		Specification.settings.setColumnLength(FormField.REMARK, 88);
+		Specification.settings.setColumnLength(FormField.REMARK, 116);
 		
 		
-		if(!specification.validate()){
+		if(!specification.validate())
+		{
 			System.out.println(specification.getErrorList().toString());
 			ErrorListDialog elg = new ErrorListDialog(HandlerUtil.getActiveShell(event).getShell(), specification.getErrorList().errorList);
 			return null;
-		} else {
-			try{
+		}
+		else
+		{
+			try
+			{
 				PerfTrack.prepare("readBOMData");
 				ProgressMonitorDialog pd = new ProgressMonitorDialog(HandlerUtil.getActiveShell(event).getShell());
 				try {
@@ -197,10 +201,12 @@ public class SampleHandler extends AbstractHandler {
 		return null;
 	}
 	
-	void readSettings(BlockList blockList){
+	void readSettings(BlockList blockList)
+	{
 		String settingsString = Specification.settings.getStringProperty("blockSettings");
 		if(settingsString==null || settingsString.isEmpty()) return;
-		for(String blockProps:settingsString.split("&")){
+		for(String blockProps:settingsString.split("&"))
+		{
 			String[] props = blockProps.split(":");
 			if(props.length!=4) continue;
 			Block block = blockList.getBlock(BlockContentType.values()[Character.getNumericValue(props[0].charAt(0))], BlockType.DEFAULT);
@@ -212,10 +218,12 @@ public class SampleHandler extends AbstractHandler {
 		}
 	}
 	
-	void saveSettings(BlockList blockList){
+	void saveSettings(BlockList blockList)
+	{
 		String settingsString = "";
 		String del = ":";
-		for(Block block:blockList){
+		for(Block block:blockList)
+		{
 			settingsString+=block.blockContentType.ordinal()+(block.blockType==BlockType.DEFAULT?"0":"1")+del+block.reservePosNum+del+block.reserveLinesNum+del+block.intervalPosNum;
 			settingsString+="&";
 		}

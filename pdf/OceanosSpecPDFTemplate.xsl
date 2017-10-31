@@ -114,7 +114,7 @@
              <fo:block/>
            </fo:block-container>
 		   <fo:block-container position="absolute" top="5mm" bottom="10mm" left="1.41mm" right="0mm" reference-orientation="90">
-		     <fo:block font-style="normal" font-size="3mm"><xsl:value-of select="root/FileData/@FileName"/></fo:block>
+		     <fo:block font-style="italic" font-size="3mm"><xsl:value-of select="root/FileData/@FileName"/></fo:block>
 		   </fo:block-container>
         </fo:static-content>
 
@@ -122,7 +122,7 @@
         <fo:static-content flow-name="first-region-before">
            <fo:block-container top="1mm" position="absolute">
            <fo:block font-family="arial" text-align="right" font-size="3mm">
-             <fo:inline font-style ="normal"></fo:inline>
+             <fo:inline font-style ="italic"></fo:inline>
            </fo:block>
            </fo:block-container>
            <fo:block-container border-color="black" border-bottom-style="solid" border-bottom="0.3mm" position="absolute" top="0mm" bottom="0mm" left="10mm" right="0mm">
@@ -141,12 +141,12 @@
         <fo:static-content flow-name="first-region-after">
            <fo:block-container top="1mm"  position="absolute">
                <fo:block font-family="arial" text-align="right" font-size="3mm">
-                 <fo:inline font-style ="normal">Формат А4</fo:inline>
+                 <fo:inline font-style ="italic">Формат А4</fo:inline>
                </fo:block>
            </fo:block-container>
            <fo:block-container top="1mm" position="absolute">
                <fo:block font-family="arial" text-align="center" font-size="3mm">
-                 <fo:inline font-style ="normal">Копировал</fo:inline>
+                 <fo:inline font-style ="italic">Копировал</fo:inline>
                </fo:block>
            </fo:block-container>
            <fo:block-container border-color="black" border-top-style="solid" border-top="0.3mm" position="absolute" top="0mm" bottom="0mm" left="3mm" right="0mm">
@@ -213,7 +213,7 @@
              <fo:block/>
            </fo:block-container>
 		   <fo:block-container position="absolute" top="5mm" bottom="10mm" left="1.41mm" right="0mm" reference-orientation="90">
-		     <fo:block font-style="normal" font-size="3mm"><xsl:value-of select="root/FileData/@FileName"/></fo:block>
+		     <fo:block font-style="italic" font-size="3mm"><xsl:value-of select="root/FileData/@FileName"/></fo:block>
 		   </fo:block-container>
         </fo:static-content>
 
@@ -221,7 +221,7 @@
         <fo:static-content flow-name="other-region-before" master-reference="First-A4_spec_typeA-page">
            <fo:block-container top="1mm" position="absolute">
                <fo:block font-family="arial" text-align="right" font-size="3mm">
-                 <fo:inline font-style ="normal">ГОСТ 2.108-68 Форма 1а</fo:inline>
+                 <fo:inline font-style ="italic">ГОСТ 2.108-68 Форма 1а</fo:inline>
                </fo:block>
            </fo:block-container>
            <fo:block-container border-color="black" border-bottom-style="solid" border-bottom="0.3mm" position="absolute" top="0mm" bottom="0mm" left="15mm" right="0mm">
@@ -239,12 +239,12 @@
         <fo:static-content flow-name="other-region-after">
            <fo:block-container top="1mm"  position="absolute">
            <fo:block font-family="arial" text-align="right" font-size="3mm">
-             <fo:inline font-style ="normal">Формат А4</fo:inline>
+             <fo:inline font-style ="italic">Формат А4</fo:inline>
            </fo:block>
            </fo:block-container>
            <fo:block-container top="1mm" position="absolute">
            <fo:block font-family="arial" text-align="center" font-size="3mm">
-             <fo:inline font-style ="normal">Копировал</fo:inline>
+             <fo:inline font-style ="italic">Копировал</fo:inline>
            </fo:block>
            </fo:block-container>
            <fo:block-container border-color="black" border-top-style="solid" border-top="0.3mm" position="absolute" top="0mm" bottom="0mm" left="3mm" right="0mm">
@@ -292,13 +292,13 @@
 
       <fo:table-header>
         <fo:table-row line-height="{$s_table_header_height}"  height="{$s_table_header_height}">
-          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="4.8mm" reference-orientation="90" inline-progression-dimension="from-parent(line-height)" display-align="center" line-height="4.5mm"><fo:block text-align="center" font-size="3.5mm">Формат</fo:block></fo:block-container></fo:table-cell>
-          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="4.8mm" reference-orientation="90" inline-progression-dimension="from-parent(line-height)" display-align="center" line-height="4.5mm"><fo:block text-align="center" font-size="3.5mm">Зона</fo:block></fo:block-container></fo:table-cell>
-          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="6.8mm" reference-orientation="90" inline-progression-dimension="from-parent(line-height)" display-align="center" line-height="4.5mm"><fo:block text-align="center" font-size="3.5mm">Поз.</fo:block></fo:block-container></fo:table-cell>
-          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Обозначение</fo:block></fo:table-cell>
-          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Наименование</fo:block></fo:table-cell>
-          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="9.8mm" reference-orientation="90" inline-progression-dimension="from-parent(line-height)" display-align="center" line-height="4mm"><fo:block text-align="center" font-size="4mm">Кол.</fo:block></fo:block-container></fo:table-cell>
-          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="14.6mm" line-height="6.7mm" display-align="center"><fo:block text-align="center">Приме-</fo:block><fo:block text-align="center">чание</fo:block></fo:block-container></fo:table-cell>
+          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="4.8mm" reference-orientation="90" inline-progression-dimension="from-parent(line-height)" display-align="center" line-height="4.5mm"><fo:block text-align="center" font-style="italic" font-size="3.5mm">Формат</fo:block></fo:block-container></fo:table-cell>
+          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="4.8mm" reference-orientation="90" inline-progression-dimension="from-parent(line-height)" display-align="center" line-height="4.5mm"><fo:block text-align="center" font-style="italic" font-size="3.5mm">Зона</fo:block></fo:block-container></fo:table-cell>
+          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="6.8mm" reference-orientation="90" inline-progression-dimension="from-parent(line-height)" display-align="center" line-height="4.5mm"><fo:block text-align="center" font-style="italic" font-size="3.5mm">Поз.</fo:block></fo:block-container></fo:table-cell>
+          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Обозначение</fo:block></fo:table-cell>
+          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Наименование</fo:block></fo:table-cell>
+          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="9.8mm" reference-orientation="90" inline-progression-dimension="from-parent(line-height)" display-align="center" line-height="4mm"><fo:block text-align="center" font-size="4mm" font-style="italic">Кол.</fo:block></fo:block-container></fo:table-cell>
+          <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block-container height="14.6mm" line-height="6.7mm" display-align="center"><fo:block text-align="center" font-style="italic">Приме-</fo:block><fo:block text-align="center" font-style="italic">чание</fo:block></fo:block-container></fo:table-cell>
         </fo:table-row>
       </fo:table-header>
 
@@ -412,8 +412,9 @@
           <fo:block>
             <xsl:if test="contains($font,'underline')"> <xsl:attribute name="text-decoration">underline</xsl:attribute></xsl:if>
             <xsl:if test="contains($font,'bold')"> <xsl:attribute name="font-weight">bold</xsl:attribute></xsl:if>
-			<xsl:if test="contains($font,'italic')"> <xsl:attribute name="font-style">italic</xsl:attribute></xsl:if>
+			<!--:if test="contains($font,'italic')"> <xsl:attribute name="font-style">italic</xsl:attribute></xsl:if-->
 			<xsl:if test="contains($col/@warning,'true')"> <xsl:attribute name="color">red</xsl:attribute></xsl:if>
+			<xsl:attribute name="font-style">italic</xsl:attribute>
             
 			<xsl:if test="contains($col/@unite,'true')">
 				<xsl:attribute name="background-color">white</xsl:attribute>
@@ -524,16 +525,16 @@
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid" number-rows-spanned="3"><fo:block-container height="14mm" display-align="center"><fo:block text-align="center" font-size="6mm"><xsl:value-of select="$Oboznach"/></fo:block></fo:block-container></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid" number-rows-spanned="3"><fo:block-container height="14mm" display-align="center"><fo:block text-align="center" font-size="6mm" font-style="italic"><xsl:value-of select="$Oboznach"/></fo:block></fo:block-container></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid" number-rows-spanned="3">
 
                      <fo:table table-layout="fixed" width="100%" border-collapse="collapse" line-height="1.5 * 4.45mm">
                          <fo:table-body>
                              <fo:table-row height="6.670mm">
-                             <fo:table-cell border-width="0.0mm 0.0mm 0.5mm 0.0mm" border-style="solid"><fo:block text-align="center">Лист</fo:block></fo:table-cell>
+                             <fo:table-cell border-width="0.0mm 0.0mm 0.5mm 0.0mm" border-style="solid"><fo:block text-align="center" font-style="italic">Лист</fo:block></fo:table-cell>
                              </fo:table-row>
                              <fo:table-row height="6.670mm">
-                             <fo:table-cell border-width="0.5mm 0.0mm 0.0mm 0.0mm" border-style="solid"><fo:block text-align="center"><fo:page-number/></fo:block></fo:table-cell>
+                             <fo:table-cell border-width="0.5mm 0.0mm 0.0mm 0.0mm" border-style="solid"><fo:block text-align="center" font-style="italic"><fo:page-number/></fo:block></fo:table-cell>
                              </fo:table-row>
                          </fo:table-body>
                      </fo:table>
@@ -541,20 +542,20 @@
                   </fo:table-cell>
                 </fo:table-row>
                 <fo:table-row height='from-parent(height)'>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/><xsl:if test="not(contains($Izm,'00'))"><fo:block text-align="center"><xsl:value-of select="$Izm"/></fo:block></xsl:if></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/><xsl:if test="not(contains($Izm,'00'))"><fo:block text-align="center" font-style="italic"><xsl:value-of select="$Izm"/></fo:block></xsl:if></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center"><xsl:value-of select="$Dokum"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic"><xsl:value-of select="$Dokum"/></fo:block></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
                   <!-- Spanned cells number-rows-spanned="3"  -->
                   <!-- Spanned cells number-rows-spanned="3"  -->
                 </fo:table-row>
                 <fo:table-row height='from-parent(height)'>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Изм.</fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Лист</fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">№ докум.</fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Подп.</fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Дата</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Изм.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Лист</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">№ докум.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Подп.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Дата</fo:block></fo:table-cell>
                   <!-- Spanned cells number-rows-spanned="3"  -->
                   <!-- Spanned cells number-rows-spanned="3"  -->
                 </fo:table-row>
@@ -614,7 +615,7 @@
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="6" number-rows-spanned="3"><fo:block-container height="14mm" display-align="center"><fo:block text-align="center" font-size="6mm"><xsl:value-of select="$Oboznach"/></fo:block></fo:block-container></fo:table-cell> 
+                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="6" number-rows-spanned="3"><fo:block-container height="14mm" display-align="center"><fo:block text-align="center" font-style="italic" font-size="6mm"><xsl:value-of select="$Oboznach"/></fo:block></fo:block-container></fo:table-cell> 
                   <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
                   <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
                   <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
@@ -623,25 +624,11 @@
                 </fo:table-row>
 
                 <fo:table-row height='from-parent(height)'>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/><xsl:if test="not(contains($Izm,'00'))"><fo:block text-align="center"><xsl:value-of select="$Izm"/></fo:block></xsl:if></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/><xsl:if test="not(contains($Izm,'00'))"><fo:block text-align="center" font-style="italic"><xsl:value-of select="$Izm"/></fo:block></xsl:if></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center"><xsl:value-of select="$Dokum"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic"><xsl:value-of select="$Dokum"/></fo:block></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
-                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
-                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
-                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
-                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
-                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
-                </fo:table-row>
-
-                <fo:table-row height='from-parent(height)'>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Изм.</fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Лист</fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">№ докум.</fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Подп.</fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Дата</fo:block></fo:table-cell>
                   <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
                   <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
                   <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
@@ -651,47 +638,61 @@
                 </fo:table-row>
 
                 <fo:table-row height='from-parent(height)'>
-                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm">Разраб.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Изм.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Лист</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">№ докум.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Подп.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Дата</fo:block></fo:table-cell>
+                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
+                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
+                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
+                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
+                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
+                  <!-- Spanned sells number-columns-spanned="6" number-rows-spanned="3" -->
+                </fo:table-row>
+
+                <fo:table-row height='from-parent(height)'>
+                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm" font-style="italic">Разраб.</fo:block></fo:table-cell>
                   <!-- Spanned cell -->
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm"><xsl:value-of select="$Razr"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm" font-style="italic"><xsl:value-of select="$Razr"/></fo:block></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm"><xsl:value-of select="$crtDate"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm" font-style="italic"><xsl:value-of select="$crtDate"/></fo:block></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid" number-rows-spanned="5" > <xsl:call-template name="Text_container"><xsl:with-param name="Text" select="$Naimen"/><xsl:with-param name="Height">24mm</xsl:with-param><xsl:with-param name="Width">70mm</xsl:with-param></xsl:call-template></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="3"><fo:block text-align="center">Лит.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="3"><fo:block text-align="center" font-style="italic">Лит.</fo:block></fo:table-cell>
                   <!-- Spanned sells number-columns-spanned="3" -->
                   <!-- Spanned sells number-columns-spanned="3" -->
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Лист</fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">Листов</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Лист</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">Листов</fo:block></fo:table-cell>
                 </fo:table-row>
 
                 <fo:table-row height='from-parent(height)'>
-                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm">Пров.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm" font-style="italic">Пров.</fo:block></fo:table-cell>
                   <!-- Spanned cells number-columns-spanned="2" -->
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm"><xsl:value-of select="$Prov"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm" font-style="italic"><xsl:value-of select="$Prov"/></fo:block></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm"><xsl:value-of select="$chkDate"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm" font-style="italic"><xsl:value-of select="$chkDate"/></fo:block></fo:table-cell>
                   <!-- Spanned cells number-rows-spanned="5" -->
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center"><xsl:value-of select="$Litera1"/></fo:block></fo:table-cell>
-				  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center"><xsl:value-of select="$Litera2"/></fo:block></fo:table-cell>
-				  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center"><xsl:value-of select="$Litera3"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic"><xsl:value-of select="$Litera1"/></fo:block></fo:table-cell>
+				  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic"><xsl:value-of select="$Litera2"/></fo:block></fo:table-cell>
+				  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic"><xsl:value-of select="$Litera3"/></fo:block></fo:table-cell>
                   <!--fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell-->
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center">
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic">
                         <!-- Uncomment to hide page number on first page -->
 						<!--xsl:if test = "$pageQty>'1'"-->
                             <fo:page-number/>
                         <!--/xsl:if-->
                   </fo:block></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center"><fo:page-number-citation ref-id="LastPage"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-style="italic"><fo:page-number-citation ref-id="LastPage"/></fo:block></fo:table-cell>
                 </fo:table-row>
 
                 <fo:table-row height='from-parent(height)'>
                   <!-- Доп. проверяющий -->
-				  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm">Т.контр</fo:block></fo:table-cell>
+				  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm" font-style="italic">Т.контр</fo:block></fo:table-cell>
                   <!-- Spanned cells number-columns-spanned="2" -->
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm"><xsl:value-of select="$AddChecker"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm" font-style="italic"><xsl:value-of select="$AddChecker"/></fo:block></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm"><xsl:value-of select="$tchkDate"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm" font-style="italic"><xsl:value-of select="$tchkDate"/></fo:block></fo:table-cell>
                   <!-- Spanned cells number-rows-spanned="5" -->
 				  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="5" number-rows-spanned="3"><fo:block-container margin-bottom="0.5mm" padding-top="0.25mm" height="13mm" display-align="center"><fo:block text-align="center" font-size="4.5mm"><fo:external-graphic content-width="49mm" content-height="13mm" overflow="hidden" scaling="uniform" src="iconOceanos.jpg"/>
                         </fo:block></fo:block-container></fo:table-cell>
@@ -702,11 +703,11 @@
                 </fo:table-row>
 
                 <fo:table-row height='from-parent(height)'>
-                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm">Н.контр.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm" font-style="italic">Н.контр.</fo:block></fo:table-cell>
                   <!-- Spanned cells number-columns-spanned="2" -->
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm"><xsl:value-of select="$Norm"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm" font-style="italic"><xsl:value-of select="$Norm"/></fo:block></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm"><xsl:value-of select="$ctrlDate"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm" font-style="italic"><xsl:value-of select="$ctrlDate"/></fo:block></fo:table-cell>
                   <!-- Spanned cells number-rows-spanned="5" -->
                   <!-- Spanned cells number-rows-spanned="3" -->
                   <!-- Spanned cells number-rows-spanned="3"  number-rows-spanned="3"  -->
@@ -716,11 +717,11 @@
                 </fo:table-row>
 
                 <fo:table-row height='from-parent(height)'>
-                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm">Утв.</fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid" number-columns-spanned="2"><fo:block margin-left="0.5mm" font-style="italic">Утв.</fo:block></fo:table-cell>
                   <!-- Spanned cell -->
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm"><xsl:value-of select="$Utv"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block margin-left="0.5mm" font-size="2.5mm" font-style="italic"><xsl:value-of select="$Utv"/></fo:block></fo:table-cell>
                   <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block/></fo:table-cell>
-                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm"><xsl:value-of select="$aprDate"/></fo:block></fo:table-cell>
+                  <fo:table-cell border-width="0.5mm" border-style="solid"><fo:block text-align="center" font-size="2.5mm" font-style="italic"><xsl:value-of select="$aprDate"/></fo:block></fo:table-cell>
                   <!-- Spanned cells number-rows-spanned="5" -->
                   <!-- Spanned cells number-rows-spanned="3" -->
                   <!-- Spanned cells number-rows-spanned="3"  number-rows-spanned="3"  -->
@@ -755,12 +756,12 @@
       <fo:table-column column-width="57mm"/>
               <fo:table-body  border-width="0.5mm 0.5mm 0.5mm 0.5mm">
                  <fo:table-row  height="4.5mm" border-width="0.5mm">
-                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" margin-top="0.5mm" font-size="3mm">Справ. №</fo:block></fo:table-cell>
-                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" margin-top="0.5mm" font-size="3mm">Перв. примен.</fo:block></fo:table-cell>
+                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" font-style="italic" margin-top="0.5mm" font-size="3mm">Справ. №</fo:block></fo:table-cell>
+                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" font-style="italic" margin-top="0.5mm" font-size="3mm">Перв. примен.</fo:block></fo:table-cell>
                  </fo:table-row>
                  <fo:table-row  height="6.5mm" border-width="0.5mm">
                    <fo:table-cell wrap-option="no-wrap" border-width='from-parent(border-width)' border-style="solid"><fo:block/></fo:table-cell>
-                   <fo:table-cell wrap-option="no-wrap" border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" font-size="5.0mm" margin-top="0.25mm" margin-bottom="0.25mm"><xsl:value-of select="$PervPrimen"/></fo:block></fo:table-cell>
+                   <fo:table-cell wrap-option="no-wrap" border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" font-style="italic" font-size="5.0mm" margin-top="0.25mm" margin-bottom="0.25mm"><xsl:value-of select="$PervPrimen"/></fo:block></fo:table-cell>
                  </fo:table-row>
               </fo:table-body>
     </fo:table>
@@ -810,11 +811,11 @@
       <fo:table-column column-width="35mm"/>
               <fo:table-body  border-width="0.5mm 0.5mm 0.5mm 0.5mm">
                  <fo:table-row  height="4.5mm" border-width="0.5mm">
-                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" margin-top="0.5mm" font-size="3mm">Инв. № подл.</fo:block></fo:table-cell>
-                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" margin-top="0.5mm" font-size="3mm">Подп. и дата</fo:block></fo:table-cell>
-                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" margin-top="0.5mm" font-size="3mm">Взам. инв. №</fo:block></fo:table-cell>
-                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" margin-top="0.5mm" font-size="3mm">Инв. № дубл.</fo:block></fo:table-cell>
-                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" margin-top="0.5mm" font-size="3mm">Подп. и дата</fo:block></fo:table-cell>
+                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" font-style="italic" margin-top="0.5mm" font-size="3mm">Инв. № подл.</fo:block></fo:table-cell>
+                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" font-style="italic" margin-top="0.5mm" font-size="3mm">Подп. и дата</fo:block></fo:table-cell>
+                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" font-style="italic" margin-top="0.5mm" font-size="3mm">Взам. инв. №</fo:block></fo:table-cell>
+                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" font-style="italic" margin-top="0.5mm" font-size="3mm">Инв. № дубл.</fo:block></fo:table-cell>
+                   <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block text-align="center" font-style="italic" margin-top="0.5mm" font-size="3mm">Подп. и дата</fo:block></fo:table-cell>
                  </fo:table-row>
                  <fo:table-row  height="6.5mm" border-width="0.5mm">
                    <fo:table-cell border-width='from-parent(border-width)' border-style="solid"><fo:block margin-top="2mm" text-align="center" font-size="3mm"><fo:inline font-style="italic"><xsl:value-of select="$invNo"/></fo:inline></fo:block></fo:table-cell>
@@ -862,7 +863,7 @@
     </xsl:variable>
 
         <fo:block-container height="{$Height}" line-height="{$hh}{$mm}" display-align="center">
-                  <fo:block text-align="center" font-size="{$lh_norm}{$mm}"><xsl:value-of select="$Text"/></fo:block>
+                  <fo:block text-align="center" font-style="italic" font-size="{$lh_norm}{$mm}"><xsl:value-of select="$Text"/></fo:block>
          </fo:block-container>
 </xsl:template>
 
