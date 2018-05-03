@@ -82,14 +82,30 @@ public class OceanosBlockLineFactory extends BlockLineFactory
 					/*****************************Детали*********************************/
 					boolean hasDraft = false;
 					AIFComponentContext[] relatedDocs = bomLine.getItemRevision().getRelated("Oc9_DocRel");
+					String itemId = bomLine.getItem().getProperty("item_id");
+					if(itemId.contains("-")) itemId = itemId.split("-")[0]; // Если в id есть "-", то просто берем часть id до него
 					for(AIFComponentContext relatedDoc : relatedDocs){
 						String docID = relatedDoc.getComponent().getProperty("item_id");
-						if(docID.equals(bomLine.getItem().getProperty("item_id"))){
+						if(docID.equals(itemId))
+						{
 							String format = ((TCComponentItem)relatedDoc.getComponent()).getLatestItemRevision().getProperty("oc9_Format");
 							resultBlockLine.attributes.setFormat(format);
 							hasDraft = true;
 							break;
 						}
+						/*else if (bomLine.getItem().getProperty("item_id").contains("-")) //TODO на самом деле, это тут не нужно, достаточно просто itemId поменять
+						{
+							String[] tmp_item_id = bomLine.getItem().getProperty("item_id").split("-");
+							String result_item_id = tmp_item_id[0];
+								if(docID.equals(result_item_id))
+								{
+									String format = ((TCComponentItem)relatedDoc.getComponent()).getLatestItemRevision().getProperty("oc9_Format");
+									resultBlockLine.attributes.setFormat(format);
+									hasDraft = true;
+									break;
+								}
+							break;	
+						}*/
 					}
 					if(!hasDraft){
 						if(itemIR.getProperty("oc9_CADMaterial").equals("")){
