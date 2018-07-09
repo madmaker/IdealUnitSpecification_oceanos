@@ -49,6 +49,7 @@ public class BlockLineAttributes {
 	public void addKit(String id, String name, double qty){
 		if(kits==null) this.kits = new BLKits();
 		this.kits.addKit(id, name, qty);
+		
 	}
 	
 	public void addKit(BLKits kit){
@@ -109,7 +110,7 @@ public class BlockLineAttributes {
 			case POSITION: return position;
 			case ID: return id;
 			case NAME: return Arrays.toString(name.toArray());
-			case QUANTITY: return quantity==0?" ":(quantity%1==0) ? Integer.toString((int)quantity) : String.format("%f", quantity);
+			case QUANTITY: return quantity==0?" ":(quantity%1==0) ? Integer.toString((int)quantity) : String.format("%.3f", quantity);
 			case REMARK: return remark.toString();
 		}
 		return "";

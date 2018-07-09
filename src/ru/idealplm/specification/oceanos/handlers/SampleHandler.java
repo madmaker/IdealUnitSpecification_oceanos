@@ -83,7 +83,7 @@ public class SampleHandler extends AbstractHandler
 		blockList.addBlock(new Block(BlockContentType.DOCS, BlockType.DEFAULT, docComparator, docComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.COMPLEXES, BlockType.DEFAULT, defaultIDComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.ASSEMBLIES, BlockType.DEFAULT, defaultIDComparator, posComparator, 0));
-		blockList.addBlock(new Block(BlockContentType.DETAILS, BlockType.DEFAULT, detailComparator, posComparator, 0));
+		blockList.addBlock(new Block(BlockContentType.DETAILS, BlockType.DEFAULT, defaultIDComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.STANDARDS, BlockType.DEFAULT, defaultNameComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.OTHERS, BlockType.DEFAULT, defaultNameComparator, posComparator, 0));
 		blockList.addBlock(new Block(BlockContentType.MATERIALS, BlockType.DEFAULT, matComparator, posComparator, 0));

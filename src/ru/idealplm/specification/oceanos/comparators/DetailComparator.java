@@ -8,13 +8,16 @@ import ru.idealplm.specification.core.Specification.FormField;
 public class DetailComparator implements Comparator<BlockLine> {
 
 	@Override
-	public int compare(BlockLine bl0, BlockLine bl1) {
-		
+	public int compare(BlockLine bl0, BlockLine bl1)
+	{	
 		String format0 = bl0.attributes.getStringValueFromField(FormField.FORMAT);
 		String format1 = bl1.attributes.getStringValueFromField(FormField.FORMAT);
-		if(format0.equals("ав") && !format1.equals("")){
+		if(format0.equals("ав") && !format1.equals("ав"))
+		{
 			return 1;
-		}  else if (!format0.equals("ав") && format1.equals("ав")){
+		} 
+		else if (!format0.equals("ав") && format1.equals("ав"))
+		{
 			return -1;
 		}
 		
